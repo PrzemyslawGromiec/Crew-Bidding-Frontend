@@ -2,7 +2,7 @@ function loadSidebar() {
   fetch('../html/sidebar.html')
     .then(response => response.text())
     .then(data => {
-      document.getElementById('sidebar-placeholder').innerHTML = data;
+      document.getElementById('sidebar').innerHTML = data;
 
       // Dodanie nasłuchiwania na formularz po załadowaniu sidebaru
       const form = document.getElementById('flight-filter-form');

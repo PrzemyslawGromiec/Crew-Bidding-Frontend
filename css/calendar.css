@@ -1,22 +1,3 @@
-* {
-  box-sizing: border-box;
-}
-
-
-body {
-  display: grid;
-  grid-template-rows: auto auto auto;
-  margin: 0;
-}
-
-.main-layout {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 20px;
-  padding: 10px;
-}
-
-
 #calendar {
   width: 100%;
   height: 100%;

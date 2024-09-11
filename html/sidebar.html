@@ -1,46 +1,17 @@
-<aside class="sidebar">
+<div class="filter-section">
+  <select id="aircraftType" name="aircraftType">
+    <option value="">Type</option>
+    <option value="A319">A319</option>
+    <option value="A320">A320</option>
+    <option value="A321">A321</option>
+    <option value="B777">B777</option>
+    <option value="B787">B787</option>
+    <option value="A380">A380</option>
+    <option value="A350">A350</option>
+  </select>
 
-  <div class="user-profile">
-    <img src="../img/channel-1.jpeg" alt="User Avatar" class="user-avatar">
-    <p class="user-name">John Doe</p>
-  </div>
+  <input type="number" placeholder="Duration" id="min-time">
+  <input type="text" placeholder="Destination" id="destination">
+</div>
 
-  <div class="nav-options">
-    <nav>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Settings</a></li>
-      </ul>
-    </nav>
-  </div>
-
-
-  <div class="filter-section">
-    <h3>Flight Filters</h3>
-    <form id="flight-filter-form">
-      <!-- Aircraft Type -->
-      <label for="aircraftType">Aircraft Type:</label>
-      <select id="aircraftType" name="aircraftType">
-        <option value="A319">A319</option>
-        <option value="A320">A320</option>
-        <option value="A321">A321</option>
-        <option value="B777">B777</option>
-        <option value="B787">B787</option>
-        <option value="A380">A380</option>
-        <option value="A350">A350</option>
-      </select>
-
-      <!-- Report Time -->
-      <label for="reportTime">Report Time:</label>
-      <input type="datetime-local" id="reportTime" name="reportTime">
-
-      <!-- Clear Time -->
-      <label for="clearTime">Clear Time:</label>
-      <input type="datetime-local" id="clearTime" name="clearTime">
-
-      <button type="submit">Search Flights</button>
-    </form>
-  </div>
-
-</aside>
 

@@ -1,12 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
 .main-layout {
- /* width: 200px;
-  height: 200px;*/
-
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 20px;
+  padding: 10px;
+  max-height: 100vh;
+  height: 100vh;
+  width: 100vw;
 }
 
-.calendar-container {
 
+.column-left {
+  display: grid;
+  grid-template-rows: 70vh 30vh;
+  box-sizing: border-box;
 }
+
 
 
 
