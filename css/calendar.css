@@ -1,0 +1,154 @@
+* {
+  box-sizing: border-box;
+}
+
+
+body {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  margin: 0;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 20px;
+  padding: 10px;
+}
+
+
+#calendar {
+  width: 100%;
+  height: 100%;
+  max-height: 90vh;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  padding: 2%;
+  border-radius: 8px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 10px;
+}
+
+.header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.days-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 7px;
+}
+
+
+.day {
+  width: 7vw;
+  height: 6vh;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #f7f7f7;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 4vh;
+}
+
+/*@keyframes loader {*/
+/*  0% {*/
+/*    rotate: 0deg;*/
+/*  }*/
+/*  100% {*/
+/*    border-radius: 70%;*/
+/*    rotate: 360deg;*/
+/*  }*/
+/*}*/
+
+.day:hover {
+  background-color: lightpink;
+}
+
+.day:active {
+  outline: none;
+}
+
+.day:focus {
+  outline: none;
+}
+
+.day.held-down {
+  transition: transform 0.3s ease, background-color 0.3s ease, font-size 0.3s ease;
+  background-color: lightblue;
+  animation: loader 0.2s ease-out;
+  animation-fill-mode: initial;
+  outline: none;
+}
+
+.temporary-highlight {
+  background-color: lightgray;
+  border: 1px dashed gray;
+}
+
+.day.final-selection {
+  border: 2px solid #005b99;
+}
+
+.emoji-container {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  place-items: center;
+  border-radius: 50%;
+  background-color: lightgray;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.selected {
+  background-color: lightblue;
+  border: 2px solid blue;
+}
+
+.day.off-selected {
+  background-color: #37ff4e;
+  outline: none;
+}
+
+.day.work-selected {
+  background-color: #36aaff;
+  outline: none;
+}
+
+
+.delete-icon {
+  position: initial;
+  cursor: pointer;
+  font-size: 0.8em;
+  outline: none;
+}
+
+.day.final-selection:hover .delete-icon {
+  display: block;
+  outline: none;
+}
+
+
+.extra-column {
+  background-color: #565d64;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  display: grid;
+  grid-auto-flow: column; /* Flow w kolumnie */
+  grid-template-rows: repeat(2, 1fr); /* Dwa rzędy o równej wysokości */
+  gap: 10px;
+  overflow-x: auto; /* Włączenie przewijania w poziomie */
+  scroll-snap-type: x mandatory; /* Wymuszamy snap-scroll w poziomie */
+  padding: 10px;
+  max-height: 100%; /* Upewnij się, że extra-column nie przekracza wysokości kalendarza */
+}
+
+
+
+
+

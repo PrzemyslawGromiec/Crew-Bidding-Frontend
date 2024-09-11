@@ -1,0 +1,41 @@
+.flight-card {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  scroll-snap-align: start; /* Karty przylegają do początku snap-scroll */
+  min-width: 200px;
+  max-width: 250px; /* Maksymalna szerokość kart */
+  min-height: 150px; /* Minimalna wysokość kart, aby zmieściły się w rzędach */
+  overflow: hidden;
+}
+
+.flight-info h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.flight-info p {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.accept-flight-button {
+  width: 100%;
+  background-color: #28a745; /* Zielony kolor przycisku akceptacji */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.accept-flight-button:hover {
+  background-color: #218838;
+}
