@@ -6,83 +6,18 @@
   color: white;
   padding: 2%;
   display: grid;
-  grid-template-rows: auto auto auto;
+  grid-template-columns: 1fr 1fr 1fr;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   box-sizing: border-box;
-}
-
-.sidebar nav ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar nav ul li a {
-  color: white;
-  text-decoration: none;
-}
-
-.sidebar nav ul li a:hover {
-  color: #4CAF50;
-}
-
-.user-profile {
-  max-width: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto;
+  align-items: center;
   justify-items: center;
-  text-align: center;
-  padding: 0;
-  margin: 0;
-}
-
-.user-avatar {
-  max-width: 100%;
-  width: 20%;
-  height: auto;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.user-name {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.filter-section,
-.nav-options,
- h3 {
-  margin: 0;
-  max-width: 100%;
-}
-
-#flight-filter-form {
-  display: grid;
-  width: 100%;
-  max-width: 100%;
-}
-
-#flight-filter-form button {
-  width: 100%;
-  max-width: 100px;
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#flight-filter-form button:hover {
-  background-color: #45a049;
 }
 
 select,
-input[type="datetime-local"] {
-  width: 100%;           /* Input zajmuje całą szerokość kontenera rodzica */
-  max-width: 100px;      /* Ogranicza maksymalną szerokość inputu */
+input {
+  width: 100%;
+  max-width: 100px;
   padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
