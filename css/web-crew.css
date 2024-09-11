@@ -10,7 +10,6 @@ body {
   display: grid;
   grid-template-columns: auto auto;
   gap: 20px;
-
   padding: 10px;
   max-height: 100vh;
   height: 100vh;
@@ -20,9 +19,13 @@ body {
 
 .column-left {
   display: grid;
-  grid-template-rows: 70vh 30vh;
-  box-sizing: border-box;
+  grid-template-rows: 70vh auto;
   gap: 10px;
+}
+
+.column-right {
+  display: grid;
+  grid-template-rows: auto;
 }
 
 
