@@ -220,10 +220,17 @@ function updateFlights() {
     const reportTime = formatDateTimeForCriteria(reportDate);
     const clearTime = formatDateTimeForCriteria(clearDate);
 
+    const aircraftTypeSelect = document.getElementById('aircraftType');
+    const selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
+
     const criteria = {
       reportTime: reportTime,
       clearTime: clearTime
     };
+
+    if (selectedAircraftType && selectedAircraftType !== '') {
+      criteria.aircraftType = selectedAircraftType;
+    }
 
     getFlights(criteria);
   } else {

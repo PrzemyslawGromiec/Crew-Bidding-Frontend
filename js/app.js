@@ -6,7 +6,12 @@ function getFlights(criteria) {
   const url = DOMAIN + "api/v0/flights?" + params.toString();
 
   fetch(url)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(data => {
       console.log(data);
       displayFlights(data);
@@ -16,10 +21,14 @@ function getFlights(criteria) {
     });
 }
 
-
 function displayFlights(flights) {
   const flightsContainer = document.querySelector('.extra-column');
   flightsContainer.innerHTML = "";
+
+  if (flights.length === 0) {
+    flightsContainer.innerHTML = "<p>No flights found for the selected criteria.</p>";
+    return;
+  }
 
   flights.forEach(flight => {
     const flightCard = createFlightCard(flight);
@@ -82,10 +91,3 @@ function formatDateTime(dateTimeString) {
 
   return `${day}/${month}/${year} - ${hours}:${minutes}`;
 }
-
-
-
-
-
-
-
