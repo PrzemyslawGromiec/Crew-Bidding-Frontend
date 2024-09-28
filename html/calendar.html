@@ -36,46 +36,16 @@
     <div class="extra-column">
       FLIGHTS
     </div>
-
   </div>
 
 
 </div>
 <script src="../js/load-sidebar.js"></script>
+<script src="../js/app.js"></script>
 <script src="../js/calendar.js"></script>
 <script src="../js/flight-card.js"></script>
-</body>
 
+</body>
 </html>
 
 
-
-<!-- kroki
-1. kalandarz na sztywno wpisany z ręki
-2. dynamiczny kalendarz dostosowujący się do miesiąca
-3. najeżdżanie na dzień otwiera duży kwadart
-4. na tym kwadracie pojawiają się dwa obszary (wolne, praca)
-5. przeciąganie obszaru na koniec wybieranego okresu (w prostszej wersji klikanie na poczatek i koniec)
-6. najechanie na wczesniej wybrany obszar umożliwia kasowanie (iknoa smietnika,)
-7. wizualizacja podpowiadająca, że zaznaczanie wolnego lub pracy można szarpnąć
-
-
-const calendarDiv = document.querySelector("#calendar");
-
-if (calendarDiv) {
-    const fragment = document.createDocumentFragment(); // Tworzenie fragmentu dokumentu
-
-    for (let day = 1; day <= 30; day++) { // Przykładowo 30 dni
-        const dayElement = document.createElement("div");
-        dayElement.textContent = day;
-        dayElement.classList.add("calendar-day");
-        fragment.appendChild(dayElement);
-    }
-
-    calendarDiv.appendChild(fragment);
-} else {
-    console.error("Element with id 'calendar' not found.");
-}
-
-
--->

@@ -25,9 +25,8 @@ async function fetchFlights(aircraftType, reportTime, clearTime) {
     const flights = await response.json();
     console.log('Received flights:', flights);
 
-    // Wyświetlanie lotów w extra-column
     const flightContainer = document.querySelector('.extra-column');
-    flightContainer.innerHTML = '';  // Wyczyść poprzednie wyniki
+    flightContainer.innerHTML = '';
 
     flights.forEach(flight => {
       const flightCard = `

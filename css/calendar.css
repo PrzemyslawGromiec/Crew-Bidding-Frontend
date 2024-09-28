@@ -101,7 +101,6 @@
   outline: none;
 }
 
-
 .delete-icon {
   position: initial;
   cursor: pointer;
@@ -114,7 +113,6 @@
   outline: none;
 }
 
-
 .extra-column {
   background-color: #565d64;
   border-radius: 8px;
@@ -122,14 +120,15 @@
   text-align: center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   display: grid;
-  grid-auto-flow: column; /* Flow w kolumnie */
-  grid-template-rows: repeat(2, 1fr); /* Dwa rzędy o równej wysokości */
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  grid-auto-rows: min-content;
   gap: 10px;
-  overflow-x: auto; /* Włączenie przewijania w poziomie */
-  scroll-snap-type: x mandatory; /* Wymuszamy snap-scroll w poziomie */
   padding: 10px;
-  max-height: 100%; /* Upewnij się, że extra-column nie przekracza wysokości kalendarza */
+  max-height: 100%;
+  overflow-y: auto;
+
 }
+
 
 
 
