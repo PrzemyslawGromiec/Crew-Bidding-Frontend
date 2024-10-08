@@ -1,4 +1,3 @@
-
   <select id="aircraftType" name="aircraftType">
     <option value="">Type</option>
     <option value="A319">A319</option>
@@ -8,10 +7,10 @@
     <option value="B787">B787</option>
     <option value="A380">A380</option>
     <option value="A350">A350</option>
+    <option value="adsaf">ssdf</option>
   </select>
 
-  <input type="number" placeholder="Duration" id="min-time">
-  <input type="text" placeholder="Destination" id="destination">
-
-
+  <input type="range" id="minTimeSlider" name="minTime" min="0" max="144" step="1" value="0">
+  <span id="slider-value">0 hours</span>
+  <input type="text" placeholder="Destination" id="airportCode">
 

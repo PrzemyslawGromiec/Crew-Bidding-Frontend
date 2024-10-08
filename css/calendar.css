@@ -47,9 +47,6 @@
 /*  }*/
 /*}*/
 
-.day:hover {
-  background-color: lightpink;
-}
 
 .day:active {
   outline: none;
@@ -61,19 +58,34 @@
 
 .day.held-down {
   transition: transform 0.3s ease, background-color 0.3s ease, font-size 0.3s ease;
-  background-color: lightblue;
+  background-color: #565d64;
   animation: loader 0.2s ease-out;
   animation-fill-mode: initial;
   outline: none;
 }
 
-.temporary-highlight {
-  background-color: lightgray;
-  border: 1px dashed gray;
+
+.day.temporary-work {
+  background-color: rgba(54, 170, 255, 0.5);
+  /*border: 1px dashed blue;*/
+  outline: none;
+}
+
+.day.temporary-off {
+  background-color: rgba(55, 255, 78, 0.5);
+  border: 1px dashed green;
 }
 
 .day.final-selection {
-  border: 2px solid #005b99;
+  border: 2px dot-dash silver;
+}
+
+.final-selection.work-selected {
+  background-color: #36aaff;
+}
+
+.final-selection.off-selected {
+  background-color: #37ff4e;
 }
 
 .emoji-container {
@@ -126,11 +138,4 @@
   padding: 10px;
   max-height: 100%;
   overflow-y: auto;
-
 }
-
-
-
-
-
-

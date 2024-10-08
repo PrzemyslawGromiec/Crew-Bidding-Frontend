@@ -1,26 +1,46 @@
+// webpack.config.prod.js
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path');
 
 module.exports = merge(common, {
   mode: 'production',
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: path.resolve(__dirname, 'index.html'), // Ścieżka do szablonu HTML
+      filename: 'index.html',
+      inject: 'body',
     }),
-    new CopyPlugin({
+    new CopyWebpackPlugin({
       patterns: [
-        { from: 'img', to: 'img' },
-        { from: 'css', to: 'css' },
-        { from: 'js/vendor', to: 'js/vendor' },
-        { from: 'icon.svg', to: 'icon.svg' },
-        { from: 'favicon.ico', to: 'favicon.ico' },
-        { from: 'robots.txt', to: 'robots.txt' },
-        { from: 'icon.png', to: 'icon.png' },
-        { from: '404.html', to: '404.html' },
-        { from: 'site.webmanifest', to: 'site.webmanifest' },
+        { from: 'html', to: 'html' }, // Kopiuje folder html
       ],
     }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css', // Ekstrakcja CSS do osobnych plików
+    }),
   ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'], // Zastępuje style-loader
+      },
+    ],
+  },
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'assets/[hash][ext][query]', // Lokalizacja assetów
+    clean: true,
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all', // Dzieli kod na wszystkie kawałki
+    },
+    runtimeChunk: 'single', // Dzieli runtime na osobny plik
+  },
 });

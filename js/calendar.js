@@ -1,3 +1,6 @@
+// import { DateTime } from 'luxon';
+import { getFlights } from './app.js';
+
 let isSelecting = false;
 let startDayElement = null;
 let selectedColor = '';
@@ -8,7 +11,7 @@ let nextMonth, nextMonthYear;
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
 
-function generateCalendar() {
+export function generateCalendar() {
   const calendarContainer = document.getElementById('calendar');
   const header = document.querySelector('.header');
   const daysContainer = document.querySelector('.days-container');
@@ -23,16 +26,35 @@ function generateCalendar() {
   nextMonth = (currentMonth + 1) % 12;
   nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
 
-  const daysInNextMonth = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(nextMonthYear, nextMonth, 1);
+  let dayOfWeek = firstDayOfMonth.getDay();
+  dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-  // const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  header.textContent = `${monthNames[nextMonth]} ${nextMonthYear}`;
+  const extraMonth = (currentMonth +2) % 12;
+  console.log(extraMonth)
+  const extraMonthYear = extraMonth < currentMonth ? currentYear + 1 : currentYear;
+  const firstDayOfExtraMonth = new Date(extraMonthYear,extraMonth, 1);
+  let dayOfWeekExtraMonth = firstDayOfExtraMonth.getDay();
 
-  for (let day = 1; day <= daysInNextMonth; day++) {
+  header.textContent = `${monthNames[nextMonth].toUpperCase()} ${nextMonthYear}`;
+  const daysInMonth = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
+  for(let i = 0; i < dayOfWeek-1; i++) {
+    const emptyDay = document.createElement('div');
+    // dayElement.textContent = "";
+    emptyDay.classList.add('day');
+    daysContainer.appendChild(emptyDay);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
     const dayElement = document.createElement('div');
     dayElement.classList.add('day');
     dayElement.textContent = day;
+   /* dayElement.setAttribute('data-day', day);
+    dayElement.setAttribute('data-month', currentMonth);
+    dayElement.setAttribute('data-year', currentYear);*/
     dayElement.setAttribute('data-day', day);
+    dayElement.setAttribute('data-month', nextMonth);
+    dayElement.setAttribute('data-year', nextMonthYear);
 
     dayElement.addEventListener('mouseenter', () => {
       if (dayElement.classList.contains('final-selection')) {
@@ -64,6 +86,10 @@ function generateCalendar() {
         startDayElement = dayElement;
         firstSelectedElement = dayElement;
         lastHoveredElement = dayElement;
+
+        if (selectedColor === 'work-selected') {
+          dayElement.classList.add('temporary-work');
+        }
       }
     });
 
@@ -84,39 +110,134 @@ function generateCalendar() {
 
     daysContainer.appendChild(dayElement);
   }
-}
+  // Obliczenie liczby komórek, które zostały wypełnione w kalendarzu
+  const totalCells = daysContainer.children.length;
+  let nextMonthDay = 1;
 
-generateCalendar();
+// Obliczenie liczby brakujących dni do uzupełnienia ostatniego tygodnia i pełnego dodatkowego rzędu
+  const extraDaysNeeded = (7 - (totalCells % 7)) % 7;
+  const totalExtraDays = extraDaysNeeded + 7; // Liczba dni do dodania (brakujące dni + pełny dodatkowy rząd)
+
+  for (let i = 0; i < totalExtraDays; i++) {
+    const nextMonthDayElement = document.createElement('div');
+    nextMonthDayElement.classList.add('day', 'next-month-day');
+    nextMonthDayElement.textContent = nextMonthDay;
+    nextMonthDayElement.style.opacity = '0.5';
+    nextMonthDayElement.setAttribute('data-day', nextMonthDay.toString());
+    nextMonthDayElement.setAttribute('data-month', extraMonth.toString());
+    nextMonthDayElement.setAttribute('data-year', extraMonthYear.toString());
+
+    nextMonthDayElement.addEventListener('mouseenter', () => {
+      if (nextMonthDayElement.classList.contains('final-selection')) {
+        showDeleteIcon(nextMonthDayElement);
+      }
+      if (isSelecting && startDayElement) {
+        lastHoveredElement = nextMonthDayElement;
+        updateSelection();
+    }});
+
+    nextMonthDayElement.addEventListener('mouseleave', () => {
+      if (nextMonthDayElement.classList.contains('final-selection')) {
+        hideDeleteIcon(nextMonthDayElement);
+        nextMonthDayElement.textContent = nextMonthDayElement.getAttribute('data-day');
+      } else if (!isSelecting && nextMonthDayElement !== firstSelectedElement) {
+        nextMonthDayElement.textContent = nextMonthDayElement.getAttribute('data-day');
+        nextMonthDayElement.classList.remove('held-down');
+      }
+    });
+
+    nextMonthDayElement.addEventListener('mouseup', () => {
+      if (isSelecting) {
+        applyFinalSelection();
+        isSelecting = false;
+        startDayElement = null;
+        clearTemporarySelection();
+      }
+
+      if (firstSelectedElement) {
+        firstSelectedElement.textContent = firstSelectedElement.getAttribute('data-day');
+        firstSelectedElement.classList.remove('held-down');
+        firstSelectedElement = null;
+      }
+    });
+
+    daysContainer.appendChild(nextMonthDayElement);
+    nextMonthDay++;
+  }
+
+}
 
 function updateSelection() {
   const days = document.querySelectorAll('.day');
-  let startDay = parseInt(startDayElement.getAttribute('data-day'));
-  let endDay = parseInt(lastHoveredElement.getAttribute('data-day'));
+
+  const startDate = new Date(
+    parseInt(startDayElement.getAttribute('data-year')),
+    parseInt(startDayElement.getAttribute('data-month')),
+    parseInt(startDayElement.getAttribute('data-day'))
+  );
+
+  const endDate = new Date(
+    parseInt(lastHoveredElement.getAttribute('data-year')),
+    parseInt(lastHoveredElement.getAttribute('data-month')),
+    parseInt(lastHoveredElement.getAttribute('data-day'))
+  );
+
+  let [minDate, maxDate] = startDate <= endDate ? [startDate, endDate] : [endDate, startDate];
 
   days.forEach(day => {
-    let dayNumber = parseInt(day.getAttribute('data-day'));
-    if ((dayNumber >= startDay && dayNumber <= endDay) || (dayNumber <= startDay && dayNumber >= endDay)) {
-      day.classList.add('temporary-highlight');
-      day.classList.add(selectedColor);
-    } else if (!day.classList.contains('final-selection')){
-      day.classList.remove('temporary-highlight', 'work-selected', 'off-selected');
+    const dayDate = new Date(
+      parseInt(day.getAttribute('data-year')),
+      parseInt(day.getAttribute('data-month')),
+      parseInt(day.getAttribute('data-day'))
+    );
+
+    if (selectedColor === 'work-selected') {
+      if (dayDate >= minDate && dayDate <= maxDate) {
+        day.classList.add('temporary-work');
+      } else if (!day.classList.contains('final-selection')) {
+        day.classList.remove('temporary-work');
+      }
+    }
+
+    if (selectedColor === 'off-selected') {
+      if (
+        dayDate >= minDate &&
+        dayDate <= maxDate &&
+        startDate.getMonth() === endDate.getMonth() &&
+        startDate.getFullYear() === endDate.getFullYear()
+      ) {
+        day.classList.add('temporary-off');
+      } else if (!day.classList.contains('final-selection')) {
+        day.classList.remove('temporary-off');
+      }
     }
   });
 }
 
 function applyFinalSelection() {
-  const days = document.querySelectorAll('.day.temporary-highlight');
+  const days = document.querySelectorAll('.day.temporary-work, .day.temporary-off');
   currentGroupId++;
 
   days.forEach(day => {
+    day.classList.remove('temporary-work', 'temporary-off');
     day.classList.add('final-selection');
     day.classList.add(selectedColor);
     day.setAttribute('data-group-id', currentGroupId);
-    day.classList.remove('temporary-highlight');
   });
 
-  updateFlights();
+  const selectedWorkPeriod = getSelectedWorkPeriod();
+
+  if (selectedWorkPeriod) {
+    const { startDate, endDate } = selectedWorkPeriod;
+    console.log('Okres pracy od:', startDate);
+    console.log('do:', endDate);
+
+    updateFlights(startDate, endDate);
+  }
 }
+
+
+
 
 function clearTemporarySelection() {
   const days = document.querySelectorAll('.day.temporary-highlight');
@@ -138,7 +259,7 @@ function createEmojiContainer(dayElement) {
   emoji1.addEventListener('mousedown', (event) => {
     const parentDayElement = event.target.closest('.day');
     selectedColor = 'work-selected';
-    parentDayElement.classList.add('work-selected');
+    parentDayElement.classList.add('temporary-work');
     isSelecting = true;
 
     parentDayElement.innerHTML = '💼';
@@ -148,7 +269,7 @@ function createEmojiContainer(dayElement) {
   emoji2.addEventListener('mousedown', (event) => {
     const parentDayElement = event.target.closest('.day');
     selectedColor = 'off-selected';
-    parentDayElement.classList.add('off-selected');
+    parentDayElement.classList.add('temporary-off');
     isSelecting = true;
 
     parentDayElement.innerHTML = '🌴';
@@ -194,25 +315,11 @@ function hideDeleteIcon(dayElement) {
   }
 }
 
-function updateFlights() {
-  const allSelectedWorkDays = document.querySelectorAll('.day.final-selection.work-selected');
-  let workDates = [];
 
-  allSelectedWorkDays.forEach(day => {
-    const dayNumber = day.getAttribute('data-day');
-    const headerText = day.closest('.calendar-container').querySelector('.header').textContent;
-    const [monthName, year] = headerText.split(' ');
-    const monthIndex = monthNames.indexOf(monthName);
-
-    const date = new Date(year, monthIndex, dayNumber);
-    workDates.push(date);
-  });
-
-  if (workDates.length > 0) {
-    workDates.sort((a, b) => a - b);
-
-    const reportDate = new Date(workDates[0]);
-    const clearDate = new Date(workDates[workDates.length - 1]);
+export function updateFlights(startDate, endDate) {
+  if (startDate && endDate) {
+    const reportDate = new Date(startDate);
+    const clearDate = new Date(endDate);
 
     reportDate.setHours(0, 0, 0, 0);
     clearDate.setHours(23, 59, 0, 0);
@@ -223,6 +330,8 @@ function updateFlights() {
     const aircraftTypeSelect = document.getElementById('aircraftType');
     const selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
 
+    const airportCode = document.getElementById('airportCode').value;
+
     const criteria = {
       reportTime: reportTime,
       clearTime: clearTime
@@ -230,6 +339,10 @@ function updateFlights() {
 
     if (selectedAircraftType && selectedAircraftType !== '') {
       criteria.aircraftType = selectedAircraftType;
+    }
+
+    if (airportCode) {
+      criteria.airportCode = airportCode;
     }
 
     getFlights(criteria);
@@ -240,7 +353,8 @@ function updateFlights() {
 }
 
 
-function deleteGroup(groupId) {
+
+export function deleteGroup(groupId) {
   const days = document.querySelectorAll(`.day[data-group-id="${groupId}"]`);
   days.forEach(day => {
     day.classList.remove('final-selection', 'work-selected', 'off-selected', 'held-down', 'fixed-size');
@@ -276,13 +390,39 @@ document.getElementById('delete-selected-days').addEventListener('click', () => 
 
 function formatDateTimeForCriteria(date) {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Miesiące od 0 do 11
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
 
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function getSelectedWorkPeriod() {
+  const allSelectedWorkDays = document.querySelectorAll('.day.final-selection.work-selected');
+  let workDates = [];
+
+  allSelectedWorkDays.forEach(day => {
+    const dayNumber = parseInt(day.getAttribute('data-day'));
+    const dayMonth = parseInt(day.getAttribute('data-month'));
+    const dayYear = parseInt(day.getAttribute('data-year'));
+
+    const date = new Date(dayYear, dayMonth, dayNumber);
+    workDates.push(date);
+  });
+
+  if (workDates.length > 0) {
+    workDates.sort((a, b) => a - b);
+    const startDate = new Date(workDates[0]);
+    const endDate = new Date(workDates[workDates.length - 1]);
+
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+    return {startDate,endDate};
+  } else {
+    return null;
+  }
 }
 
   /*
@@ -294,8 +434,6 @@ function formatDateTimeForCriteria(date) {
   * mouseenter - kursor wchodzi na obszar danego elementu
   * mouseleave - kursor opuszcza obszar danego elementu
   * mouseover - kursor porusza sie nad elementem lub jego podrzednym elementem
-  *
-  *
   *
   * */
 

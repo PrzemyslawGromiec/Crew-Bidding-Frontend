@@ -1,9 +1,0 @@
-.img-schedule {
-  object-fit: cover;
-  object-position: center;
-  border-radius: 20px;
-  opacity: 0.4;
-  width: 30vw;
-  max-width: 100%;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
-}

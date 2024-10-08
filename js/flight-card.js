@@ -1,47 +1,69 @@
-async function fetchFlights(aircraftType, reportTime, clearTime) {
-  try {
-    const specificationInput = {
-      aircraftType: aircraftType,
-      reportTime: reportTime,
-      clearTime: clearTime
-    };
+// flight-card.js
 
-    const response = await fetch('http://localhost:8080/api/v0/flights/all', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(specificationInput)
-    });
+export function createFlightCard(flight) {
+  const card = document.createElement('div');
+  card.classList.add('flight-card');
+  card.setAttribute('tabindex', '0');
 
-    console.log('Data being sent:', specificationInput);
-    console.log('Response status:', response.status);
-    console.log('Response:', response);
+  card.innerHTML = `
+    <div class="flight-card-content">
+      <h3 class="flight-number">${flight.flightNumber}</h3>
+      <p class="airport-code"> ${flight.airportCode}</p>
+    </div>
+    <div class="flight-card-tooltip">
+      <p><strong>AIRCRAFT:</strong> ${flight.aircraftType}</p>
+      <p><strong>REPORT:</strong><br> ${formatDateTime(flight.reportTime)}</p>
+      <p><strong>CLEAR:</strong><br> ${formatDateTime(flight.clearTime)}</p>
+    </div>
+  `;
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  card.addEventListener('mouseenter', () => {
+    const tooltip = card.querySelector('.flight-card-tooltip');
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    if (cardRect.top - tooltipRect.height - 10 < 0) {
+      tooltip.classList.remove('tooltip-top');
+    } else {
+      tooltip.classList.add('tooltip-top');
     }
 
-    const flights = await response.json();
-    console.log('Received flights:', flights);
+    tooltip.style.visibility = 'visible';
+    tooltip.style.opacity = '1';
+  });
 
-    const flightContainer = document.querySelector('.extra-column');
-    flightContainer.innerHTML = '';
+  card.addEventListener('mouseleave', () => {
+    const tooltip = card.querySelector('.flight-card-tooltip');
+    tooltip.style.visibility = 'hidden';
+    tooltip.style.opacity = '0';
+  });
 
-    flights.forEach(flight => {
-      const flightCard = `
-        <div class="flight-card">
-          <div class="flight-info">
-            <h4>Flight ${flight.id}</h4>
-            <p>${flight.reportTime} → ${flight.clearTime}</p>
-            <p>Aircraft Type: ${flight.aircraftType}</p>
-          </div>
-          <button class="accept-flight-button">Accept Flight</button>
-        </div>`;
-      flightContainer.insertAdjacentHTML('beforeend', flightCard);
-    });
+  return card;
+}
 
-  } catch (error) {
-    console.error("Error fetching flights: ", error);
+export function displayFlights(flights) {
+  const flightsContainer = document.querySelector('.extra-column');
+  flightsContainer.innerHTML = "";
+
+  if (flights.length === 0) {
+    flightsContainer.innerHTML = "<p>No flights found for the selected criteria.</p>";
+    return;
   }
+
+  flights.forEach(flight => {
+    const flightCard = createFlightCard(flight);
+    flightsContainer.appendChild(flightCard);
+  });
+}
+
+export function formatDateTime(dateTimeString) {
+  const date = new Date(dateTimeString);
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear()).slice(-2);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${day}/${month}/${year} - ${hours}:${minutes}`;
 }
