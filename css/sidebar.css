@@ -1,25 +1,69 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 #sidebar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, auto);
+  background-color: #565d64;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  color: white;
+  gap: 10px;
+  padding: 2%;
   width: 100%;
   height: 100%;
-  background-color: #565d64;
-  color: white;
-  padding: 2%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   box-sizing: border-box;
   align-items: center;
   justify-items: center;
 }
 
-select,
-input {
+.grid-item, .time-input{
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 5px;
+}
+
+.grid-item label {
+  font-weight: bold;
+}
+
+.slider-container{
+  display: grid;
+  grid-template-rows: auto auto;
+
+}
+
+#aircraftType,
+#airportCode {
   width: 100%;
-  max-width: 100px;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 5px;
+  font-size: 1rem;
   box-sizing: border-box;
 }
+
+
+.time-range-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.time-range-slider label {
+  font-weight: bold;
+}
+
+.time-range-slider input[type="range"] {
+  width: 100%;
+}
+
+.time-range-slider span {
+  font-size: 14px;
+  color: #333;
+}
+
+

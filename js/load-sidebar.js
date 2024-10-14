@@ -1,4 +1,4 @@
-import { updateFlights } from './calendar.js';
+import { updateFlights, workPeriods} from './calendar.js';
 
 export default function loadSidebar() {
   fetch('html/sidebar.html')
@@ -6,36 +6,64 @@ export default function loadSidebar() {
     .then(data => {
       document.getElementById('sidebar').innerHTML = data;
       initializeSidebarEventListeners();
-
     })
     .catch(error => console.error('Error loading sidebar:', error));
 }
 
 function initializeSidebarEventListeners() {
   const aircraftTypeSelect = document.getElementById('aircraftType');
-  const minTimeSlider = document.getElementById('minTimeSlider');
   const airportCode = document.getElementById('airportCode');
-  const sliderValue = document.getElementById('slider-value');
 
+  function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  }
 
+  // Funkcja do obsługi zmiany filtrów
+  const handleFilterChange = debounce(() => {
+    if (workPeriods.length === 0) {
+      console.warn('Please select dates in the calendar.');
+      document.querySelector('.extra-column').innerHTML = "Please select dates in the calendar.";
+      return;
+    }
+
+    workPeriods.forEach((period) => {
+      console.log('Updating flights for period:', period.startDate, period.endDate);
+
+      const selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
+      const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
+
+      updateFlights(period.startDate, period.endDate, {
+        aircraftType: selectedAircraftType,
+        airportCode: airportCodeValue
+      });
+    });
+  }, 300);
+
+  // Nasłuchiwanie na zmianę typu samolotu
   if (aircraftTypeSelect) {
-    aircraftTypeSelect.addEventListener('change', updateFlights);
+    aircraftTypeSelect.addEventListener('change', () => {
+      console.log('Aircraft Type changed to:', aircraftTypeSelect.value);
+      handleFilterChange();
+    });
   } else {
     console.error('Element aircraftTypeSelect nie został znaleziony.');
   }
-  if (minTimeSlider) {
-    minTimeSlider.addEventListener('input', () => {
-      sliderValue.textContent = `${minTimeSlider.value} hours`;
-      updateFlights();
-    });
-  }else {
-    console.error('Element minTimeSlider nie został znaleziony.');
-  }
 
+  // Nasłuchiwanie na zmianę kodu lotniska
   if (airportCode) {
-    airportCode.addEventListener('input', updateFlights);
+    airportCode.addEventListener('input', () => {
+      handleFilterChange();
+    });
   } else {
     console.error('Element airportCode nie został znaleziony.');
   }
 }
+
+
 
