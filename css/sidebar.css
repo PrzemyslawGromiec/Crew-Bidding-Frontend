@@ -45,6 +45,28 @@
   box-sizing: border-box;
 }
 
+.airport-code-holder{
+  width: 210px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom,rgb(227, 213, 255),rgb(255, 231, 231));
+  border-radius: 30px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.075);
+}
+
+.airport-code-input{
+  width: 200px;
+  height: 40px;
+  border: none;
+  outline: none;
+  background-color: rgb(255, 255, 255);
+  border-radius: 30px;
+}
+
 
 .time-range-slider {
   display: flex;

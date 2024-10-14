@@ -1,4 +1,6 @@
-<!--  <select id="aircraftType" name="aircraftType">
+<div class="grid-item aircraft-type">
+  <label for="aircraftType">Aircraft Type:</label>
+  <select id="aircraftType" name="aircraftType">
     <option value="">Type</option>
     <option value="A319">A319</option>
     <option value="A320">A320</option>
@@ -7,47 +9,26 @@
     <option value="B787">B787</option>
     <option value="A380">A380</option>
     <option value="A350">A350</option>
-    <option value="adsaf">ssdf</option>
   </select>
+</div>
 
-  <input type="range" id="minTimeSlider" name="minTime" min="0" max="144" step="1" value="0">
-  <span id="slider-value">0 hours</span>
-  <input type="text" placeholder="Destination" id="airportCode">-->
+<div class="time-input">
+  <label for="reportTime">Report time:</label>
+  <input type="time" id="reportTime" name="time" min="05:00" max="23:00" required>
+</div>
 
+<div class="time-input">
+  <label for="clearTime">Clear time:</label>
+  <input type="time" id="clearTime" name="time" min="05:00" max="23:00" required>
+</div>
 
-  <div class="grid-item aircraft-type">
-    <label for="aircraftType">Aircraft Type:</label>
-    <select id="aircraftType" name="aircraftType">
-      <option value="">Type</option>
-      <option value="A319">A319</option>
-      <option value="A320">A320</option>
-      <option value="A321">A321</option>
-      <option value="B777">B777</option>
-      <option value="B787">B787</option>
-      <option value="A380">A380</option>
-      <option value="A350">A350</option>
-    </select>
-  </div>
+<div class="grid-item airport-code-holder">
+  <input type="text" placeholder="Destination" id="airportCode" class="airport-code-input">
+</div>
 
-  <div class="grid-item min-time-slider">
-    <label for="minTimeSlider">Minimum Time:</label>
-
-    <div class="grid-item airport-code">
-      <label for="airportCode">Destination:</label>
-      <input type="text" placeholder="Destination" id="airportCode">
-    </div>
-
-    <div class="slider-container">
-      <input type="range" id="minTimeSlider" name="minTime" min="0" max="144" step="1" value="0">
-      <span id="slider-value">0 hours</span>
-    </div>
-  </div>
-
-
-
-  <div class="grid-item future-filter-1"></div>
-  <div class="grid-item future-filter-2"></div>
-  <div class="grid-item future-filter-3"></div>
+<div class="grid-item future-filter-1"></div>
+<div class="grid-item future-filter-2"></div>
+<div class="grid-item future-filter-3"></div>
 
 
 
