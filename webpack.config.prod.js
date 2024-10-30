@@ -10,37 +10,37 @@ module.exports = merge(common, {
   mode: 'production',
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'index.html'), // Ścieżka do szablonu HTML
+      template: path.resolve(__dirname, 'index.html'),
       filename: 'index.html',
       inject: 'body',
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'html', to: 'html' }, // Kopiuje folder html
+        { from: 'html', to: 'html' },
       ],
     }),
     new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css', // Ekstrakcja CSS do osobnych plików
+      filename: '[name].[contenthash].css',
     }),
   ],
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'], // Zastępuje style-loader
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
   },
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
-    assetModuleFilename: 'assets/[hash][ext][query]', // Lokalizacja assetów
+    assetModuleFilename: 'assets/[hash][ext][query]',
     clean: true,
   },
   optimization: {
     splitChunks: {
-      chunks: 'all', // Dzieli kod na wszystkie kawałki
+      chunks: 'all',
     },
-    runtimeChunk: 'single', // Dzieli runtime na osobny plik
+    runtimeChunk: 'single',
   },
 });

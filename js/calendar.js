@@ -1,5 +1,5 @@
-// import { DateTime } from 'luxon';
-import { getFlights } from './app.js';
+import {getFlightsForMonth} from "./api";
+import {updateFlights} from "./load-sidebar";
 
 let isSelecting = false;
 let startDayElement = null;
@@ -8,12 +8,14 @@ let firstSelectedElement = null;
 let lastHoveredElement = null;
 let currentGroupId = 0;
 let nextMonth, nextMonthYear;
-export let workPeriods =[];
+export let flights = [];
+export let workPeriods = [];
+export let offPeriods = [];
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
 
 export function generateCalendar() {
-  const calendarContainer = document.getElementById('calendar');
+  document.getElementById('calendar');
   const header = document.querySelector('.header');
   const daysContainer = document.querySelector('.days-container');
 
@@ -23,6 +25,7 @@ export function generateCalendar() {
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth();
+  const tooltip = document.getElementById('tooltip');
 
   nextMonth = (currentMonth + 1) % 12;
   nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
@@ -31,17 +34,15 @@ export function generateCalendar() {
   let dayOfWeek = firstDayOfMonth.getDay();
   dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-  const extraMonth = (currentMonth +2) % 12;
-  console.log(extraMonth)
+  const extraMonth = (currentMonth + 2) % 12;
   const extraMonthYear = extraMonth < currentMonth ? currentYear + 1 : currentYear;
-  const firstDayOfExtraMonth = new Date(extraMonthYear,extraMonth, 1);
-  let dayOfWeekExtraMonth = firstDayOfExtraMonth.getDay();
+  const firstDayOfExtraMonth = new Date(extraMonthYear, extraMonth, 1);
+  firstDayOfExtraMonth.getDay();
 
   header.textContent = `${monthNames[nextMonth].toUpperCase()} ${nextMonthYear}`;
   const daysInMonth = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
-  for(let i = 0; i < dayOfWeek-1; i++) {
+  for (let i = 0; i < dayOfWeek - 1; i++) {
     const emptyDay = document.createElement('div');
-    // dayElement.textContent = "";
     emptyDay.classList.add('day');
     daysContainer.appendChild(emptyDay);
   }
@@ -50,9 +51,6 @@ export function generateCalendar() {
     const dayElement = document.createElement('div');
     dayElement.classList.add('day');
     dayElement.textContent = day;
-   /* dayElement.setAttribute('data-day', day);
-    dayElement.setAttribute('data-month', currentMonth);
-    dayElement.setAttribute('data-year', currentYear);*/
     dayElement.setAttribute('data-day', day);
     dayElement.setAttribute('data-month', nextMonth);
     dayElement.setAttribute('data-year', nextMonthYear);
@@ -73,7 +71,6 @@ export function generateCalendar() {
 
     dayElement.addEventListener('mouseleave', () => {
       if (dayElement.classList.contains('final-selection')) {
-        hideDeleteIcon(dayElement);
         dayElement.textContent = dayElement.getAttribute('data-day');
       } else if (!isSelecting && dayElement !== firstSelectedElement) {
         dayElement.textContent = day;
@@ -122,7 +119,7 @@ export function generateCalendar() {
   for (let i = 0; i < totalExtraDays; i++) {
     const nextMonthDayElement = document.createElement('div');
     nextMonthDayElement.classList.add('day', 'next-month-day');
-    nextMonthDayElement.textContent = nextMonthDay;
+    nextMonthDayElement.textContent = nextMonthDay.toString();
     nextMonthDayElement.style.opacity = '0.5';
     nextMonthDayElement.setAttribute('data-day', nextMonthDay.toString());
     nextMonthDayElement.setAttribute('data-month', extraMonth.toString());
@@ -135,11 +132,11 @@ export function generateCalendar() {
       if (isSelecting && startDayElement) {
         lastHoveredElement = nextMonthDayElement;
         updateSelection();
-    }});
+      }
+    });
 
     nextMonthDayElement.addEventListener('mouseleave', () => {
       if (nextMonthDayElement.classList.contains('final-selection')) {
-        hideDeleteIcon(nextMonthDayElement);
         nextMonthDayElement.textContent = nextMonthDayElement.getAttribute('data-day');
       } else if (!isSelecting && nextMonthDayElement !== firstSelectedElement) {
         nextMonthDayElement.textContent = nextMonthDayElement.getAttribute('data-day');
@@ -155,11 +152,11 @@ export function generateCalendar() {
         clearTemporarySelection();
       }
 
-      if (firstSelectedElement) {
+  /*    if (firstSelectedElement) {
         firstSelectedElement.textContent = firstSelectedElement.getAttribute('data-day');
         firstSelectedElement.classList.remove('held-down');
         firstSelectedElement = null;
-      }
+      }*/
     });
 
     daysContainer.appendChild(nextMonthDayElement);
@@ -214,34 +211,137 @@ function updateSelection() {
   });
 }
 
-//todo:
 function applyFinalSelection() {
-
+  //dodawanie okresu
   currentGroupId++;
+
   const selectedPeriod = getSelectedPeriods();
 
-  if (selectedPeriod === null) {
-    console.error('No days selected for the period');
-    return; // Jeśli nie ma zaznaczonych dni, wychodzimy z funkcji
-  }
+  let periodsToUpdate = selectedColor === 'work-selected' ? workPeriods : offPeriods;
+  const gapInMillis = 24 * 60 * 60 * 1000;
 
-  workPeriods.push({
+  periodsToUpdate.push({
     startDate: selectedPeriod.startDate,
     endDate: selectedPeriod.endDate,
     groupId: currentGroupId
   });
 
-  // Aktualizujemy style dla zaznaczonych dni
+  periodsToUpdate.sort((a, b) => a.startDate - b.startDate);
+  //scalanie
+  const newPeriods = []
+  const mergedPeriods = [];
+  const firstPeriod = periodsToUpdate[0];
+  let lastPeriod = firstPeriod;
+  newPeriods.append(lastPeriod)
+
+  for (let i = 1; i < periodsToUpdate.length; i++) {
+    const currentPeriod = periodsToUpdate[i];
+
+    if (lastPeriod.endDate.getTime() + gapInMillis >= currentPeriod.startDate.getTime()) {
+      newPeriods.append({
+        startDate: lastPeriod.startDate,
+        endDate: currentPeriod.endDate,
+        groupId: ++currentGroupId
+      })
+    } else {
+      mergedPeriods.push(lastPeriod);
+      lastPeriod = currentPeriod;
+    }
+  }
+
+  mergedPeriods.push(lastPeriod);
+
+  if (selectedColor === 'work-selected') {
+    workPeriods = mergedPeriods;
+  } else {
+    offPeriods = mergedPeriods;
+  }
+
+  console.log('Updated work periods:', workPeriods);
+  console.log('Updated off periods:', offPeriods);
+
+  mergedPeriods.forEach(period => {
+    updateDaysWithGroupId(period.startDate, period.endDate, period.groupId);
+    console.log('merged list group id: ' + period.groupId)
+  });
+
   const days = document.querySelectorAll('.day.temporary-work, .day.temporary-off');
   days.forEach(day => {
     day.classList.remove('temporary-work', 'temporary-off');
     day.classList.add('final-selection');
     day.classList.add(selectedColor);
-    day.setAttribute('data-group-id', currentGroupId);
+    day.setAttribute('data-group-id', currentGroupId.toString());
   });
 
-  console.log(workPeriods);
+  if (selectedColor === 'work-selected') {
+    updateFlights(selectedPeriod.startDate, selectedPeriod.endDate);
   }
+}
+
+function updateDaysWithGroupId(startDate, endDate, groupId) {
+  const days = document.querySelectorAll('.day');
+
+  days.forEach(day => {
+    const dayDate = new Date(
+      parseInt(day.getAttribute('data-year')),
+      parseInt(day.getAttribute('data-month')),
+      parseInt(day.getAttribute('data-day'))
+    );
+
+    if (dayDate >= startDate && dayDate <= endDate) {
+      day.setAttribute('data-group-id', groupId);
+      console.log(dayDate)
+      console.log('update day function')
+    }
+  });
+}
+
+function showDeleteIcon(dayElement) {
+  const trashIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  trashIcon.setAttribute("width", "40");  // Możesz dostosować szerokość
+  trashIcon.setAttribute("height", "40");  // Możesz dostosować wysokość
+  trashIcon.setAttribute("viewBox", "0 0 24 24");
+  trashIcon.setAttribute("fill", "none");
+  trashIcon.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  trashIcon.classList.add('trash-icon');
+
+
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("fill-rule", "evenodd");
+  path.setAttribute("clip-rule", "evenodd");
+  path.setAttribute("d", "M7.10002 5H3C2.44772 5 2 5.44772 2 6C2 6.55228 2.44772 7 3 7H4.06055L4.88474 20.1871C4.98356 21.7682 6.29471 23 7.8789 23H16.1211C17.7053 23 19.0164 21.7682 19.1153 20.1871L19.9395 7H21C21.5523 7 22 6.55228 22 6C22 5.44772 21.5523 5 21 5H19.0073C19.0018 4.99995 18.9963 4.99995 18.9908 5H16.9C16.4367 2.71776 14.419 1 12 1C9.58104 1 7.56329 2.71776 7.10002 5ZM9.17071 5H14.8293C14.4175 3.83481 13.3062 3 12 3C10.6938 3 9.58254 3.83481 9.17071 5ZM17.9355 7H6.06445L6.88085 20.0624C6.91379 20.5894 7.35084 21 7.8789 21H16.1211C16.6492 21 17.0862 20.5894 17.1192 20.0624L17.9355 7ZM14.279 10.0097C14.83 10.0483 15.2454 10.5261 15.2068 11.0771L14.7883 17.0624C14.7498 17.6134 14.2719 18.0288 13.721 17.9903C13.17 17.9517 12.7546 17.4739 12.7932 16.9229L13.2117 10.9376C13.2502 10.3866 13.7281 9.97122 14.279 10.0097ZM9.721 10.0098C10.2719 9.97125 10.7498 10.3866 10.7883 10.9376L11.2069 16.923C11.2454 17.4739 10.83 17.9518 10.2791 17.9903C9.72811 18.0288 9.25026 17.6134 9.21173 17.0625L8.79319 11.0771C8.75467 10.5262 9.17006 10.0483 9.721 10.0098Z");
+  path.setAttribute("fill", "#0F1729");
+
+  trashIcon.appendChild(path);
+
+  dayElement.innerHTML = '';
+  dayElement.appendChild(trashIcon);
+
+  trashIcon.addEventListener('click', function () {
+    deletePeriod(dayElement.getAttribute('data-group-id'));
+  });
+}
+
+function deletePeriod(groupId) {
+  const daysToRemove = document.querySelectorAll(`.day[data-group-id="${groupId}"]`);
+
+  daysToRemove.forEach(day => {
+    day.classList.remove('final-selection', 'work-selected', 'off-selected', 'held-down');
+    day.removeAttribute('data-group-id');
+    day.textContent = day.getAttribute('data-day');
+
+    const deleteIcon = day.querySelector('.delete-icon');
+    if (deleteIcon) {
+      deleteIcon.remove();
+    }
+  });
+
+  if (selectedColor === 'work-selected') {
+    workPeriods = workPeriods.filter(period => period.groupId !== parseInt(groupId));
+  } else {
+    offPeriods = offPeriods.filter(period => period.groupId !== parseInt(groupId));
+  }
+}
 
 export function getSelectedPeriods() {
   const days = document.querySelectorAll('.day.temporary-work, .day.temporary-off');
@@ -260,17 +360,17 @@ export function getSelectedPeriods() {
     );
 
     if (startDate === null) {
-      startDate = new Date(dayDate); // Kopiujemy datę
-      startDate.setHours(0, 0, 0, 0); // Ustawiamy początek dnia na 00:00:00
+      startDate = new Date(dayDate);
+      startDate.setHours(6, 0, 1, 0);
     }
 
-    endDate = new Date(dayDate); // Kopiujemy datę
-    endDate.setHours(23, 59, 59, 999);
+    endDate = new Date(dayDate);
+    endDate.setHours(21, 59, 0, 0);
   });
-    return {
-      startDate: startDate,
-      endDate: endDate
-    };
+  return {
+    startDate: startDate,
+    endDate: endDate
+  };
 }
 
 
@@ -279,6 +379,10 @@ function clearTemporarySelection() {
   days.forEach(day => {
     day.classList.remove('temporary-highlight');
   });
+}
+
+export async function initializeFlights() {
+  flights = await getFlightsForMonth();
 }
 
 function createEmojiContainer(dayElement) {
@@ -315,125 +419,10 @@ function createEmojiContainer(dayElement) {
   emojiContainer.appendChild(emoji2);
   return emojiContainer;
 }
-
-function showDeleteIcon(dayElement) {
-  dayElement.innerHTML = '';
-  const deleteIcon = document.createElement('span');
-  deleteIcon.textContent = '🗑️';
-  deleteIcon.classList.add('delete-icon');
-
-  deleteIcon.addEventListener('click', (event) => {
-    event.stopPropagation();
-    deleteDay(dayElement);
-  });
-
-  dayElement.appendChild(deleteIcon);
-}
-
-function deleteDay(dayElement) {
-  dayElement.classList.remove('final-selection', 'work-selected', 'off-selected', 'held-down', 'fixed-size');
-  dayElement.removeAttribute('data-group-id');
-  dayElement.textContent = dayElement.getAttribute('data-day');
-  const deleteIcon = dayElement.querySelector('.delete-icon');
-
-  if (deleteIcon) {
-    deleteIcon.remove();
-  }
-
-  const workPeriod = getSelectedWorkPeriod();
-  updateFlights(workPeriod ? workPeriod.startDate : null, workPeriod ? workPeriod.endDate : null);
-}
-
-function hideDeleteIcon(dayElement) {
-  const deleteIcon = dayElement.querySelector('.delete-icon');
-  if (deleteIcon) {
-    deleteIcon.remove();
-  }
-}
-
-export function deleteGroup(groupId) {
-  const days = document.querySelectorAll(`.day[data-group-id="${groupId}"]`);
-  days.forEach(day => {
-    day.classList.remove('final-selection', 'work-selected', 'off-selected', 'held-down', 'fixed-size');
-    day.removeAttribute('data-group-id');
-    day.textContent = day.getAttribute('data-day');
-    const deleteIcon = day.querySelector('.delete-icon');
-    if (deleteIcon) {
-      deleteIcon.remove();
-    }
-  });
-
-  const remainingSelectedDays = document.querySelectorAll('.day.final-selection');
-  if (remainingSelectedDays.length === 0) {
-    const flightsContainer = document.querySelector('.extra-column');
-    flightsContainer.innerHTML = "FLIGHTS";
-  }
-}
-
-document.getElementById('delete-selected-days').addEventListener('click', () => {
-  document.querySelectorAll('.day').forEach(day => {
-    day.classList.remove('off-selected', 'work-selected', 'held-down', 'fixed-size', 'final-selection');
-    day.textContent = day.getAttribute('data-day');
-    day.removeAttribute('data-group-id');
-    const deleteIcon = day.querySelector('.delete-confirm');
-    if (deleteIcon) {
-      deleteIcon.remove();
-    }
-  });
-
-  const flightsContainer = document.querySelector('.extra-column');
-  flightsContainer.innerHTML = "FLIGHTS";
-});
-
-
-export function updateFlights(startDate, endDate, filters = {}) {
-  if (startDate && endDate) {
-    const reportDate = new Date(startDate);
-    const clearDate = new Date(endDate);
-
-    const reportTime = formatDateTimeForCriteria(reportDate);
-    const clearTime = formatDateTimeForCriteria(clearDate);
-
-    const criteria = {
-      reportTime: reportTime,
-      clearTime: clearTime
-    };
-
-    if (filters.aircraftType && filters.aircraftType !== '') {
-      criteria.aircraftType = filters.aircraftType;
-    }
-
-    if (filters.airportCode && filters.airportCode !== '') {
-      criteria.airportCode = filters.airportCode;
-    }
-
-    console.log('Fetching flights with criteria:', criteria);
-    getFlights(criteria);
-  } else {
-    const flightsContainer = document.querySelector('.extra-column');
-    // flightsContainer.innerHTML = "FLIGHTS";
-    flightsContainer.innerHTML += `<div>Flights from ${reportTime} to ${clearTime}</div>`;
-  }
-}
-
-function formatDateTimeForCriteria(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-
-
 //todo
 export function getSelectedWorkPeriod() {
   const allSelectedWorkDays = document.querySelectorAll('.day.final-selection.work-selected');
   let workDates = [];
-
-  //to musi byc tablicaa przechowujaca okresy
 
   allSelectedWorkDays.forEach(day => {
     const dayNumber = parseInt(day.getAttribute('data-day'));
@@ -444,20 +433,17 @@ export function getSelectedWorkPeriod() {
     workDates.push(date);
   });
 
-  console.log(workDates)
-
-
 }
 
-  /*
-  * click - klinkniecie przyciskiem na danym elemencie
-  * dbclikc - podwojne klikniecie
-  * mousedown - mysz wcisnaka na danym elemencie
-  * mouseup - zwolnienie przycisku po wczesniejszym wcisnieciu
-  * mousemove - gdy kursor myszy jest przesuwany nad danym elementem
-  * mouseenter - kursor wchodzi na obszar danego elementu
-  * mouseleave - kursor opuszcza obszar danego elementu
-  * mouseover - kursor porusza sie nad elementem lub jego podrzednym elementem
-  *
-  * */
+/*
+* click - klinkniecie przyciskiem na danym elemencie
+* dbclikc - podwojne klikniecie
+* mousedown - mysz wcisnaka na danym elemencie
+* mouseup - zwolnienie przycisku po wczesniejszym wcisnieciu
+* mousemove - gdy kursor myszy jest przesuwany nad danym elementem
+* mouseenter - kursor wchodzi na obszar danego elementu
+* mouseleave - kursor opuszcza obszar danego elementu
+* mouseover - kursor porusza sie nad elementem lub jego podrzednym elementem
+*
+* */
 

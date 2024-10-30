@@ -1,4 +1,6 @@
-import { updateFlights, workPeriods} from './calendar.js';
+import { workPeriods, flights} from './calendar.js';
+import {slideMin} from './range-slider';
+import {displayFlights} from "./flight-card";
 
 export default function loadSidebar() {
   fetch('html/sidebar.html')
@@ -24,7 +26,6 @@ function initializeSidebarEventListeners() {
     };
   }
 
-  // Funkcja do obsługi zmiany filtrów
   const handleFilterChange = debounce(() => {
     if (workPeriods.length === 0) {
       console.warn('Please select dates in the calendar.');
@@ -35,8 +36,12 @@ function initializeSidebarEventListeners() {
     workPeriods.forEach((period) => {
       console.log('Updating flights for period:', period.startDate, period.endDate);
 
-      const selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
+      let selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
       const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
+
+      if (selectedAircraftType === '') {
+        updateFlights(period.startDate, period.endDate);
+      }
 
       updateFlights(period.startDate, period.endDate, {
         aircraftType: selectedAircraftType,
@@ -45,23 +50,45 @@ function initializeSidebarEventListeners() {
     });
   }, 300);
 
-  // Nasłuchiwanie na zmianę typu samolotu
   if (aircraftTypeSelect) {
     aircraftTypeSelect.addEventListener('change', () => {
       console.log('Aircraft Type changed to:', aircraftTypeSelect.value);
       handleFilterChange();
     });
   } else {
-    console.error('Element aircraftTypeSelect nie został znaleziony.');
+    console.error('');
   }
 
-  // Nasłuchiwanie na zmianę kodu lotniska
   if (airportCode) {
     airportCode.addEventListener('input', () => {
       handleFilterChange();
     });
   } else {
     console.error('Element airportCode nie został znaleziony.');
+  }
+}
+
+export function updateFlights(startDate, endDate, filters = {}) {
+  if (startDate && endDate) {
+    const reportTime = new Date(startDate);
+    const clearTime = new Date(endDate);
+
+    const filteredFlights = flights.filter(flight => {
+      const flightReportTime = new Date(flight.reportTime);
+      const flightClearTime = new Date(flight.clearTime);
+
+      const isWithinDateRange = flightReportTime >= reportTime && flightClearTime <= clearTime;
+      const matchesAircraftType = filters.aircraftType ? flight.aircraftType === filters.aircraftType : true;
+      const matchesAirportCode = filters.airportCode ? flight.airportCode === filters.airportCode : true;
+
+      return isWithinDateRange && matchesAircraftType && matchesAirportCode;
+    });
+
+    console.log('updateFlights function:', filteredFlights.length);
+    displayFlights(filteredFlights);
+    console.log(filteredFlights);
+  } else {
+    console.warn('Missing startDate or endDate');
   }
 }
 

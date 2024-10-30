@@ -17,7 +17,7 @@ module.exports = {
         test: /\.js$/, // Reguła dla plików .js
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader', // Transpilacja ES6+ do ES5
+          loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env'],
           },

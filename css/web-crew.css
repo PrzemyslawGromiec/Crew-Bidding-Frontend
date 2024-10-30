@@ -27,6 +27,15 @@ body {
 
 .column-right {
   display: grid;
-  grid-template-rows: auto;
+  /*grid-template-rows: auto auto;*/
+  grid-auto-rows: auto;
+  background-color: #565d64;
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  min-height: auto;
   height: 100vh;
+  max-height: 95vh;
+  gap: 2%;
 }

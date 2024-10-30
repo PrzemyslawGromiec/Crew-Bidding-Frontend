@@ -5,13 +5,18 @@ import '../css/buttons.css';
 import '../css/sidebar.css';
 import '../css/flight-card.css';
 
-import { generateCalendar } from './calendar.js';
+import { generateCalendar, initializeFlights } from './calendar.js';
 import loadSidebar from './load-sidebar.js';
-import { getFlights } from './api.js';
+import { getFlights, sendPeriod } from './api.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  generateCalendar();
-  loadSidebar();
-});
+generateCalendar();
+loadSidebar();
+initializeFlights();
 
-export { getFlights };
+
+// document.addEventListener('DOMContentLoaded', () => {
+//   generateCalendar();
+//   loadSidebar();
+// });
+
+export { getFlights, sendPeriod };
