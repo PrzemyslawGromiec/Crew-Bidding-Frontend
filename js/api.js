@@ -73,10 +73,3 @@ export async function sendPeriod(reportId, period) {
     console.error('Error sending period:', error);
   }
 }
-
-
-
-
-
-
-

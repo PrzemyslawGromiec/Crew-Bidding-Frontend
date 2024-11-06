@@ -1,6 +1,7 @@
 // flight-card.js
-import { workPeriods} from './calendar.js';
-import {getFlights} from "./api";
+import {flights} from './calendar.js';
+import {selectPeriod} from './load-sidebar';
+
 export function createFlightCard(flight) {
   const card = document.createElement('div');
   card.classList.add('flight-card');
@@ -42,22 +43,6 @@ export function createFlightCard(flight) {
   return card;
 }
 
-export function displayFlights(flights) {
-  const flightsContainer = document.querySelector('.extra-column');
-  flightsContainer.innerHTML = "";
-  generatePeriodRadioButtons(workPeriods);
-
-  if (flights.length === 0) {
-    flightsContainer.innerHTML = "<p>No flights found for the selected criteria.</p>";
-    return;
-  }
-
-  flights.forEach(flight => {
-    const flightCard = createFlightCard(flight);
-    flightsContainer.appendChild(flightCard);
-  });
-}
-
 export function formatDateTime(dateTimeString) {
   const date = new Date(dateTimeString);
 
@@ -70,7 +55,7 @@ export function formatDateTime(dateTimeString) {
   return `${day}/${month}/${year} - ${hours}:${minutes}`;
 }
 
-export function generatePeriodRadioButtons(workPeriods) {
+export function initializePeriodRadioButtons(workPeriods) {
   const radioInputContainer = document.querySelector('.radio-input');
   radioInputContainer.innerHTML = '';
 
@@ -85,26 +70,8 @@ export function generatePeriodRadioButtons(workPeriods) {
     buttonsDiv.innerHTML = '<p>No periods available</p>';
   } else {
     workPeriods.forEach((period, index) => {
-      const label = document.createElement('label');
-      label.classList.add('label');
-
-      const input = document.createElement('input');
-      input.type = 'radio';
-      input.name = 'periodRadio';
-      input.value = index;
-      input.addEventListener('change', () => {
-        const selectedPeriod = workPeriods[index];
-         console.log(`Selected period: ${period.startDate} - ${period.endDate}`);
-        displayFlightsForPeriod(selectedPeriod);
-      });
-
-      const span = document.createElement('span');
-      span.classList.add('check');
-      // span.textContent = `Period ${index + 1}: ${period.startDate.toDateString()} - ${period.endDate.toDateString()}`;
-
-      label.appendChild(input);
-      label.appendChild(span);
-      buttonsDiv.appendChild(label);
+      const radioButton = createPeriodRadioButton(period, index);
+      buttonsDiv.appendChild(radioButton);
     });
   }
 
@@ -112,29 +79,57 @@ export function generatePeriodRadioButtons(workPeriods) {
   radioInputContainer.appendChild(buttonsDiv);
 }
 
-async function displayFlightsForPeriod(period) {
-  console.log('displayFlightsForPeriod called');
-  console.log(`Fetching flights for period from ${period.startDate} to ${period.endDate}`);
+function createPeriodRadioButton(period, index) {
+  const label = document.createElement('label');
+  label.classList.add('label');
 
-  const criteria = {
-    startDate: period.startDate,
-    endDate: period.endDate
-  };
+  const input = document.createElement('input');
+  input.type = 'radio';
+  input.name = 'periodRadio';
+  input.value = index;
 
-  try {
-    const flights = await getFlights(criteria); // Oczekujemy na wynik
-    if (flights && flights.length > 0) {
-      displayFlights(flights); // Wyświetlamy loty, jeśli są
-    } else {
-      console.log('No flights found for the selected period.');
-      displayFlights([]);
-    }
-  } catch (error) {
-    console.error('Error displaying flights:', error);
-    displayFlights([]); // Wyświetlamy pustą tablicę, jeśli jest błąd
-  }
+  input.addEventListener('change', () => {
+    selectPeriod(index);
+  });
+
+  const span = document.createElement('span');
+  span.classList.add('check');
+
+  label.appendChild(input);
+  label.appendChild(span);
+
+  return label;
 }
 
+function handlePeriodSelection(period) {
+  console.log(`Selected period: ${period.start} - ${period.end}`);
+  displayFlightsForPeriod(period);
+}
 
+function displayFlightsForPeriod(period) {
+  console.log(`Filtering flights for period from ${period.start} to ${period.end}`);
 
+  const filteredFlights = flights.filter(flight => {
+    const flightReportTime = new Date(flight.reportTime);
+    const flightClearTime = new Date(flight.clearTime);
 
+    return flightReportTime >= period.start && flightClearTime <= period.end;
+  });
+
+  displayFlights(filteredFlights);
+}
+
+export function displayFlights(flights) {
+  const flightsContainer = document.querySelector('.extra-column');
+  flightsContainer.innerHTML = "";
+
+  if (flights.length === 0) {
+    flightsContainer.innerHTML = "<p>No flights found for the selected criteria.</p>";
+    return;
+  }
+
+  flights.forEach(flight => {
+    const flightCard = createFlightCard(flight);
+    flightsContainer.appendChild(flightCard);
+  });
+}

@@ -163,6 +163,17 @@
   border-radius: 15px;
 }
 
+.overlap-warning {
+  background-color: red !important;
+  animation: blink 0.5s step-end 6 alternate; /* 6 razy w 3 sekundy */
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 
 
 

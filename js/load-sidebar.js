@@ -1,6 +1,26 @@
-import { workPeriods, flights} from './calendar.js';
-import {slideMin} from './range-slider';
-import {displayFlights} from "./flight-card";
+import { workPeriods, flights } from './calendar.js';
+import { displayFlights } from "./flight-card";
+export let selectedPeriodIndex = null;
+export let selectedPeriodId = null;
+
+let aircraftTypeSelect;
+let airportCode;
+
+export function setSelectedPeriodIndex(index) {
+  selectedPeriodIndex = index;
+}
+
+export function getSelectedPeriodIndex() {
+  return selectedPeriodIndex;
+}
+
+export function setSelectedPeriodId(id) {
+  selectedPeriodId = id;
+}
+
+export function getSelectedPeriodId() {
+  return selectedPeriodId;
+}
 
 export default function loadSidebar() {
   fetch('html/sidebar.html')
@@ -12,43 +32,58 @@ export default function loadSidebar() {
     .catch(error => console.error('Error loading sidebar:', error));
 }
 
-function initializeSidebarEventListeners() {
-  const aircraftTypeSelect = document.getElementById('aircraftType');
-  const airportCode = document.getElementById('airportCode');
+function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
 
-  function debounce(func, delay) {
-    let timeoutId;
-    return function (...args) {
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func.apply(this, args);
-      }, delay);
-    };
+/*export const handleFilterChange = debounce(() => {
+  if (selectedPeriodIndex === null || !workPeriods[selectedPeriodIndex]) {
+    document.querySelector('.extra-column').innerHTML = "Please select dates in the calendar.";
+    displayFlights([]);
+    return;
   }
 
-  const handleFilterChange = debounce(() => {
-    if (workPeriods.length === 0) {
-      console.warn('Please select dates in the calendar.');
-      document.querySelector('.extra-column').innerHTML = "Please select dates in the calendar.";
-      return;
-    }
+  const selectedPeriod = workPeriods[selectedPeriodIndex];
+  console.log('Updating flights for period:', selectedPeriod.start, selectedPeriod.end);
 
-    workPeriods.forEach((period) => {
-      console.log('Updating flights for period:', period.startDate, period.endDate);
+  let selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
+  const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
 
-      let selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
-      const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
+  updateFlights(selectedPeriod.start, selectedPeriod.end, {
+    aircraftType: selectedAircraftType,
+    airportCode: airportCodeValue
+  });
+}, 300);*/
 
-      if (selectedAircraftType === '') {
-        updateFlights(period.startDate, period.endDate);
-      }
+const handleFilterChange = debounce(() => {
+  const period = workPeriods.find(period => period.id === selectedPeriodId);
+  if (!period) {
+    document.querySelector('.extra-column').innerHTML = "Please select dates in the calendar.";
+    displayFlights([]);
+    return;
+  }
 
-      updateFlights(period.startDate, period.endDate, {
-        aircraftType: selectedAircraftType,
-        airportCode: airportCodeValue
-      });
-    });
-  }, 300);
+  console.log('Updating flights for period:', period.start, period.end);
+
+  let selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
+  const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
+
+  updateFlights(period.start, period.end, {
+    aircraftType: selectedAircraftType,
+    airportCode: airportCodeValue
+  });
+}, 300);
+
+
+function initializeSidebarEventListeners() {
+  aircraftTypeSelect = document.getElementById('aircraftType');
+  airportCode = document.getElementById('airportCode');
 
   if (aircraftTypeSelect) {
     aircraftTypeSelect.addEventListener('change', () => {
@@ -56,7 +91,7 @@ function initializeSidebarEventListeners() {
       handleFilterChange();
     });
   } else {
-    console.error('');
+    console.error('Aircraft type select element not found.');
   }
 
   if (airportCode) {
@@ -64,8 +99,32 @@ function initializeSidebarEventListeners() {
       handleFilterChange();
     });
   } else {
-    console.error('Element airportCode nie został znaleziony.');
+    console.error('Airport code input element not found.');
   }
+}
+
+/*export function selectPeriod(index) {
+  if (index === null || !workPeriods[index]) {
+    selectedPeriodIndex = null;
+    displayFlights([]);
+    return;
+  }
+
+  setSelectedPeriodIndex(index);
+  handleFilterChange();
+}*/
+
+export function selectPeriod(index) {
+  const period = workPeriods[index];
+  if (!period) {
+    setSelectedPeriodId(null);
+    displayFlights([]);
+    return;
+  }
+
+  setSelectedPeriodId(period.id);
+  console.log(`Selected period id: ${period.id}`);
+  handleFilterChange();
 }
 
 export function updateFlights(startDate, endDate, filters = {}) {
@@ -84,13 +143,9 @@ export function updateFlights(startDate, endDate, filters = {}) {
       return isWithinDateRange && matchesAircraftType && matchesAirportCode;
     });
 
-    console.log('updateFlights function:', filteredFlights.length);
     displayFlights(filteredFlights);
-    console.log(filteredFlights);
   } else {
     console.warn('Missing startDate or endDate');
   }
 }
-
-
 
