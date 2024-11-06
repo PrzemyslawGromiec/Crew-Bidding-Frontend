@@ -2,19 +2,6 @@ import {getFlightsForMonth} from "./api";
 import {getSelectedPeriodId, selectPeriod, setSelectedPeriodId, updateFlights} from "./load-sidebar";
 import {displayFlights, initializePeriodRadioButtons} from "./flight-card";
 
-let isSelecting = false;
-let startDayElement = null;
-let selectedColor = '';
-let firstSelectedElement = null;
-let lastHoveredElement = null;
-let currentGroupId = 0;
-let nextMonth, nextMonthYear;
-export let flights = [];
-export let workPeriods = [];
-export let offPeriods = [];
-const monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"];
-
 class Period {
 
   constructor(start, end, id) {
@@ -29,52 +16,47 @@ class Period {
   }
 }
 
-export function generateCalendar() {
-  document.getElementById('calendar');
-  const header = document.querySelector('.header');
-  const daysContainer = document.querySelector('.days-container');
+class Time{
 
-  header.innerHTML = '';
-  daysContainer.innerHTML = '';
+  constructor() {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    this.nextMonth = (currentMonth + 1) % 12;
+    this.nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    const firstDayOfMonth = new Date(this.nextMonthYear, this.nextMonth, 1);
+    this.dayOfWeek = firstDayOfMonth.getDay();
+    this.dayOfWeek = this.dayOfWeek === 0 ? 7 : this.dayOfWeek;
+    this.extraMonth = (currentMonth + 2) % 12;
+    this.extraMonthYear = this.extraMonth < currentMonth ? currentYear + 1 : currentYear;
+    this.daysInMonth = new Date(this.nextMonthYear, this.nextMonth + 1, 0).getDate();
+  }
+}
 
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth();
-  const tooltip = document.getElementById('tooltip');
+class Day{
+  constructor(element) {
+    this.element = element;
+  }
+}
 
-  nextMonth = (currentMonth + 1) % 12;
-  nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+class Controller{
 
-  const firstDayOfMonth = new Date(nextMonthYear, nextMonth, 1);
-  let dayOfWeek = firstDayOfMonth.getDay();
-  dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
-
-  const extraMonth = (currentMonth + 2) % 12;
-  const extraMonthYear = extraMonth < currentMonth ? currentYear + 1 : currentYear;
-  const firstDayOfExtraMonth = new Date(extraMonthYear, extraMonth, 1);
-  firstDayOfExtraMonth.getDay();
-
-  header.textContent = `${monthNames[nextMonth].toUpperCase()} ${nextMonthYear}`;
-  const daysInMonth = new Date(nextMonthYear, nextMonth + 1, 0).getDate();
-  for (let i = 0; i < dayOfWeek - 1; i++) {
-    const emptyDay = document.createElement('div');
-    emptyDay.classList.add('day');
-    daysContainer.appendChild(emptyDay);
+  constructor() {
+    this.isSelecting = false;
+    this.startDayElement = null;
+    this.selectedColor = '';
+    this.firstSelectedElement = null;
+    this.lastHoveredElement = null;
   }
 
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dayElement = document.createElement('div');
-    dayElement.classList.add('day');
-    dayElement.textContent = day;
-    dayElement.setAttribute('data-day', day);
-    dayElement.setAttribute('data-month', nextMonth);
-    dayElement.setAttribute('data-year', nextMonthYear);
+  addDayListeners(dayElement){
+    const day = parseInt(dayElement.getAttribute("day-number"));
 
     dayElement.addEventListener('mouseenter', () => {
       if (dayElement.classList.contains('final-selection')) {
         showDeleteIcon(dayElement);
-      } else if (isSelecting && startDayElement) {
-        lastHoveredElement = dayElement;
+      } else if (this.isSelecting && this.startDayElement) {
+        this.lastHoveredElement = dayElement;
         updateSelection();
       } else {
         dayElement.classList.add('held-down');
@@ -87,81 +69,65 @@ export function generateCalendar() {
     dayElement.addEventListener('mouseleave', () => {
       if (dayElement.classList.contains('final-selection')) {
         dayElement.textContent = dayElement.getAttribute('data-day');
-      } else if (!isSelecting && dayElement !== firstSelectedElement) {
-        dayElement.textContent = day;
+      } else if (!this.isSelecting && dayElement !== this.firstSelectedElement) {
+        dayElement.textContent = day.toString();
         dayElement.classList.remove('held-down');
       }
     });
 
     dayElement.addEventListener('mousedown', () => {
       if (!dayElement.classList.contains('final-selection')) {
-        isSelecting = true;
-        startDayElement = dayElement;
-        firstSelectedElement = dayElement;
-        lastHoveredElement = dayElement;
-
-        if (selectedColor === 'work-selected') {
+        this.isSelecting = true;
+        this.startDayElement = dayElement;
+        this.firstSelectedElement = dayElement;
+        this.lastHoveredElement = dayElement;
+        if (this.selectedColor === 'work-selected') {
           dayElement.classList.add('temporary-work');
         }
       }
     });
 
     dayElement.addEventListener('mouseup', () => {
-      if (isSelecting) {
+      if (this.isSelecting) {
         applyFinalSelection();
-        isSelecting = false;
-        startDayElement = null;
+        this.isSelecting = false;
+        this.startDayElement = null;
         clearTemporarySelection();
       }
 
-      if (firstSelectedElement) {
-        firstSelectedElement.textContent = firstSelectedElement.getAttribute('data-day');
-        firstSelectedElement.classList.remove('held-down');
-        firstSelectedElement = null;
+      if (this.firstSelectedElement) {
+        this.firstSelectedElement.textContent = this.firstSelectedElement.getAttribute('data-day');
+        this.firstSelectedElement.classList.remove('held-down');
+        this.firstSelectedElement = null;
       }
     });
-
-    daysContainer.appendChild(dayElement);
   }
-  const totalCells = daysContainer.children.length;
-  let nextMonthDay = 1;
 
-  const extraDaysNeeded = (7 - (totalCells % 7)) % 7;
-  const totalExtraDays = extraDaysNeeded + 7;
-
-  for (let i = 0; i < totalExtraDays; i++) {
-    const nextMonthDayElement = document.createElement('div');
-    nextMonthDayElement.classList.add('day', 'next-month-day');
-    nextMonthDayElement.textContent = nextMonthDay.toString();
-    nextMonthDayElement.style.opacity = '0.5';
-    nextMonthDayElement.setAttribute('data-day', nextMonthDay.toString());
-    nextMonthDayElement.setAttribute('data-month', extraMonth.toString());
-    nextMonthDayElement.setAttribute('data-year', extraMonthYear.toString());
-
-    nextMonthDayElement.addEventListener('mouseenter', () => {
-      if (nextMonthDayElement.classList.contains('final-selection')) {
-        showDeleteIcon(nextMonthDayElement);
+  addExtraDaysListeners(dayElement){
+    dayElement.addEventListener('mouseenter', () => {
+      if (dayElement.classList.contains('final-selection')) {
+        showDeleteIcon(dayElement);
       }
-      if (isSelecting && startDayElement) {
-        lastHoveredElement = nextMonthDayElement;
+      if (controller.isSelecting && controller.startDayElement) {
+        controller.lastHoveredElement = dayElement;
         updateSelection();
       }
     });
 
-    nextMonthDayElement.addEventListener('mouseleave', () => {
-      if (nextMonthDayElement.classList.contains('final-selection')) {
-        nextMonthDayElement.textContent = nextMonthDayElement.getAttribute('data-day');
-      } else if (!isSelecting && nextMonthDayElement !== firstSelectedElement) {
-        nextMonthDayElement.textContent = nextMonthDayElement.getAttribute('data-day');
-        nextMonthDayElement.classList.remove('held-down');
+    dayElement.addEventListener('mouseleave', () => {
+      if (dayElement.classList.contains('final-selection')) {
+        dayElement.textContent = dayElement.getAttribute('data-day');
+      } else if (!controller.isSelecting && dayElement !== controller.firstSelectedElement) {
+        dayElement.textContent = dayElement.getAttribute('data-day');
+        dayElement.classList.remove('held-down');
       }
     });
 
-    nextMonthDayElement.addEventListener('mouseup', () => {
-      if (isSelecting) {
+    dayElement.addEventListener('mouseup', () => {
+      if (controller.isSelecting) {
         applyFinalSelection();
-        isSelecting = false;
-        startDayElement = null;
+        controller.isSelecting = false;
+        controller.startDayElement = null;
         clearTemporarySelection();
       }
 
@@ -171,25 +137,97 @@ export function generateCalendar() {
             firstSelectedElement = null;
           }*/
     });
+  }
 
-    daysContainer.appendChild(nextMonthDayElement);
-    nextMonthDay++;
+}
+
+
+
+let currentGroupId = 0;
+
+export let flights = [];
+export let workPeriods = [];
+export let offPeriods = [];
+
+const time = new Time();
+const controller = new Controller();
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"];
+
+function setupHeader() {
+  const header = document.querySelector('.header');
+  header.innerHTML = '';
+  header.textContent = `${monthNames[time.nextMonth].toUpperCase()} ${time.nextMonthYear}`;
+}
+
+function setupEmptyDays(daysContainer) {
+  daysContainer.innerHTML = '';
+  for (let i = 0; i < time.dayOfWeek - 1; i++) {
+    const emptyDay = document.createElement('div');
+    emptyDay.classList.add('day');
+    daysContainer.appendChild(emptyDay);
   }
 }
+
+function setupCurrentDays(daysContainer) {
+  for (let day = 1; day <= time.daysInMonth; day++) {
+    const dayElement = document.createElement('div');
+    dayElement.classList.add('day');
+    daysContainer.appendChild(dayElement);
+    dayElement.textContent = day.toString();
+    dayElement.setAttribute('data-day', day.toString());
+    dayElement.setAttribute('data-month', time.nextMonth.toString());
+    dayElement.setAttribute('data-year', time.nextMonthYear.toString());
+    dayElement.setAttribute('day-number', day.toString());
+    controller.addDayListeners(dayElement);
+  }
+}
+
+function setupExtraDays(daysContainer) {
+  const totalCells = daysContainer.children.length;
+  const extraDaysNeeded = (7 - (totalCells % 7)) % 7;
+  const totalExtraDays = extraDaysNeeded + 7;
+  for (let i = 0; i < totalExtraDays; i++) {
+    const dayNumber = i + 1;
+    const dayElement = document.createElement('div');
+    dayElement.classList.add('day', 'next-month-day');
+    dayElement.textContent = dayNumber.toString();
+    dayElement.style.opacity = '0.5';
+    dayElement.setAttribute('data-day', dayNumber.toString());
+    dayElement.setAttribute('data-month', time.extraMonth.toString());
+    dayElement.setAttribute('data-year', time.extraMonthYear.toString());
+    daysContainer.appendChild(dayElement);
+    controller.addExtraDaysListeners(dayElement);
+  }
+}
+
+function setupDays() {
+  const daysContainer = document.querySelector('.days-container');
+  setupEmptyDays(daysContainer);
+  setupCurrentDays(daysContainer);
+  setupExtraDays(daysContainer);
+}
+
+export function generateCalendar() {
+  setupHeader();
+  setupDays();
+}
+
 
 function updateSelection() {
   const days = document.querySelectorAll('.day');
 
   const startDate = new Date(
-    parseInt(startDayElement.getAttribute('data-year')),
-    parseInt(startDayElement.getAttribute('data-month')),
-    parseInt(startDayElement.getAttribute('data-day'))
+    parseInt(controller.startDayElement.getAttribute('data-year')),
+    parseInt(controller.startDayElement.getAttribute('data-month')),
+    parseInt(controller.startDayElement.getAttribute('data-day'))
   );
 
   const endDate = new Date(
-    parseInt(lastHoveredElement.getAttribute('data-year')),
-    parseInt(lastHoveredElement.getAttribute('data-month')),
-    parseInt(lastHoveredElement.getAttribute('data-day'))
+    parseInt(controller.lastHoveredElement.getAttribute('data-year')),
+    parseInt(controller.lastHoveredElement.getAttribute('data-month')),
+    parseInt(controller.lastHoveredElement.getAttribute('data-day'))
   );
 
   let [minDate, maxDate] = startDate <= endDate ? [startDate, endDate] : [endDate, startDate];
@@ -201,7 +239,7 @@ function updateSelection() {
       parseInt(day.getAttribute('data-day'))
     );
 
-    if (selectedColor === 'work-selected') {
+    if (controller.selectedColor === 'work-selected') {
       if (dayDate >= minDate && dayDate <= maxDate) {
         day.classList.add('temporary-work');
       } else if (!day.classList.contains('final-selection')) {
@@ -209,7 +247,7 @@ function updateSelection() {
       }
     }
 
-    if (selectedColor === 'off-selected') {
+    if (controller.selectedColor === 'off-selected') {
       if (
         dayDate >= minDate &&
         dayDate <= maxDate &&
@@ -227,7 +265,7 @@ function updateSelection() {
 function applyFinalSelection() {
   const selectedPeriod = getSelectedPeriods();
 
-  let conflictingPeriods = selectedColor === 'work-selected' ? offPeriods : workPeriods;
+  let conflictingPeriods = controller.selectedColor === 'work-selected' ? offPeriods : workPeriods;
   let hasConflict = conflictingPeriods.some(period =>
     (selectedPeriod.start <= period.end && selectedPeriod.end >= period.start)
   );
@@ -248,13 +286,13 @@ function applyFinalSelection() {
   }
 
   currentGroupId++;
-  let periodsToUpdate = selectedColor === 'work-selected' ? workPeriods : offPeriods;
+  let periodsToUpdate = controller.selectedColor === 'work-selected' ? workPeriods : offPeriods;
   addNewPeriod(selectedPeriod, periodsToUpdate);
 
   const gapInMillis = 24 * 60 * 60 * 1000;
   const newPeriods = mergePeriods(periodsToUpdate, gapInMillis);
 
-  if (selectedColor === 'work-selected') {
+  if (controller.selectedColor === 'work-selected') {
     workPeriods = newPeriods;
   } else {
     offPeriods = newPeriods;
@@ -264,7 +302,7 @@ function applyFinalSelection() {
   console.log('Updated work periods:', workPeriods);
   console.log('Updated off periods:', offPeriods);
 
-  if (selectedColor === 'work-selected') {
+  if (controller.selectedColor === 'work-selected') {
     updateFlights(selectedPeriod.start, selectedPeriod.end);
     initializePeriodRadioButtons(workPeriods);
     selectPeriod(workPeriods.length - 1);
@@ -307,7 +345,7 @@ function updateCalendarDisplay(newPeriods) {
   days.forEach(day => {
     day.classList.remove('temporary-work', 'temporary-off');
     day.classList.add('final-selection');
-    day.classList.add(selectedColor);
+    day.classList.add(controller.selectedColor);
   });
 }
 
@@ -445,22 +483,22 @@ function createEmojiContainer(dayElement) {
 
   emoji1.addEventListener('mousedown', (event) => {
     const parentDayElement = event.target.closest('.day');
-    selectedColor = 'work-selected';
+    controller.selectedColor = 'work-selected';
     parentDayElement.classList.add('temporary-work');
-    isSelecting = true;
+    controller.isSelecting = true;
 
     parentDayElement.innerHTML = '💼';
-    firstSelectedElement = parentDayElement;
+    controller.firstSelectedElement = parentDayElement;
   });
 
   emoji2.addEventListener('mousedown', (event) => {
     const parentDayElement = event.target.closest('.day');
-    selectedColor = 'off-selected';
+    controller.selectedColor = 'off-selected';
     parentDayElement.classList.add('temporary-off');
-    isSelecting = true;
+    controller.isSelecting = true;
 
     parentDayElement.innerHTML = '🌴';
-    firstSelectedElement = parentDayElement;
+    controller.firstSelectedElement = parentDayElement;
   });
 
   emojiContainer.appendChild(emoji1);
