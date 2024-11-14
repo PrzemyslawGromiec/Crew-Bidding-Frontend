@@ -2,6 +2,14 @@ import {getFlightsForMonth} from "./api";
 import {getSelectedPeriodId, selectPeriod, setSelectedPeriodId, updateFlights} from "./load-sidebar";
 import {displayFlights, initializePeriodRadioButtons} from "./flight-card";
 
+
+class DayType {
+  static EMPTY = 'empty';
+  static MONTH = 'month';
+  static EXTRA = 'extra';
+}
+
+
 class Period {
 
   constructor(start, end, id) {
@@ -34,8 +42,145 @@ class Time{
 }
 
 class Day{
-  constructor(element) {
-    this.element = element;
+
+  constructor(number) {
+    this.daysContainer = document.querySelector('.days-container');
+    this.number = number;
+    this.selected = false;
+    this.hovered = false;
+    this.element = null;
+  }
+
+  attachToDom() {
+    throw new Error('Class must implement this function.');
+  }
+
+
+
+
+
+  hoverStart(){
+    if(this.hovered){
+      return;
+    }
+    if(this.selected ||this.element.classList.contains('final-selection')){ //todo remove after full refactor
+      this.selected = true; //todo remove
+      showDeleteIcon(this.element);
+    }
+    this.executeHoverEnter();
+  }
+
+  executeHoverEnter(){
+    this.hovered = true;
+    this.element.classList.add('held-down');
+    this.element.innerHTML = '';
+    const emojiContainer = createEmojiContainer(this.element);
+    this.element.appendChild(emojiContainer);
+  }
+
+  hoverLeave(){
+
+  }
+
+  select(){
+
+  }
+
+}
+
+class EmptyDay extends Day{
+
+  constructor() {
+    super(0);
+  }
+
+  attachToDom() {
+      this.element = document.createElement('div');
+      this.element.classList.add('day');
+      this.daysContainer.appendChild(this.element);
+    }
+}
+
+class MonthDay extends Day{
+
+  constructor(number) {
+    super(number);
+  }
+
+
+  attachToDom() {
+    this.element = document.createElement('div');
+    this.element.classList.add('day');
+    this.daysContainer.appendChild(this.element);
+    this.element.textContent = this.number.toString();
+    this.element.setAttribute('data-day', this.number.toString());
+    this.element.setAttribute('data-month', time.nextMonth.toString());
+    this.element.setAttribute('data-year', time.nextMonthYear.toString());
+    controller.addDayListeners(this);
+  }
+}
+
+class ExtraDay extends Day{
+
+  constructor(number) {
+    super(number);
+  }
+
+  attachToDom() {
+    this.element = document.createElement('div');
+    this.element.classList.add('day', 'next-month-day');
+    this.element.textContent = this.number.toString();
+    this.element.style.opacity = '0.5';
+    this.element.setAttribute('data-day', this.number.toString());
+    this.element.setAttribute('data-month', time.extraMonth.toString());
+    this.element.setAttribute('data-year', time.extraMonthYear.toString());
+    this.daysContainer.appendChild(this.element);
+    controller.addExtraDaysListeners(this.element);
+  }
+}
+
+class Calendar{
+
+  constructor() {
+    this.days = []
+  }
+
+  createEmpty() {
+    return new EmptyDay();
+  }
+
+  monthCurrent(number){
+    return new MonthDay(number);
+  }
+
+  createExtra(number){
+    return new ExtraDay(number);
+  }
+
+  createDays(daysByType) {
+    for (let [key, value] of daysByType) {
+      for (let i = 0; i < value; i++) {
+        let day;
+        switch (key){
+          case DayType.EMPTY:
+           day = this.createEmpty();
+            break;
+          case DayType.MONTH:
+            day = this.monthCurrent(i+1);
+            break;
+          case DayType.EXTRA:
+            day = this.createExtra(i+1);
+            break;
+        }
+        this.days.push(day);
+      }
+    }
+  }
+
+  attachAll(){
+    for (const day of this.days) {
+      day.attachToDom();
+    }
   }
 }
 
@@ -49,20 +194,14 @@ class Controller{
     this.lastHoveredElement = null;
   }
 
-  addDayListeners(dayElement){
-    const day = parseInt(dayElement.getAttribute("day-number"));
+  addDayListeners(day){
+    const dayElement = day.element;
 
     dayElement.addEventListener('mouseenter', () => {
-      if (dayElement.classList.contains('final-selection')) {
-        showDeleteIcon(dayElement);
-      } else if (this.isSelecting && this.startDayElement) {
+      day.hoverStart();
+      if(!day.selected && this.isSelecting && this.startDayElement ){
         this.lastHoveredElement = dayElement;
         updateSelection();
-      } else {
-        dayElement.classList.add('held-down');
-        dayElement.innerHTML = '';
-        const emojiContainer = createEmojiContainer(dayElement);
-        dayElement.appendChild(emojiContainer);
       }
     });
 
@@ -70,7 +209,7 @@ class Controller{
       if (dayElement.classList.contains('final-selection')) {
         dayElement.textContent = dayElement.getAttribute('data-day');
       } else if (!this.isSelecting && dayElement !== this.firstSelectedElement) {
-        dayElement.textContent = day.toString();
+        dayElement.textContent = day.number.toString();
         dayElement.classList.remove('held-down');
       }
     });
@@ -151,6 +290,7 @@ export let offPeriods = [];
 
 const time = new Time();
 const controller = new Controller();
+const calendar = new Calendar();
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
@@ -161,52 +301,26 @@ function setupHeader() {
   header.textContent = `${monthNames[time.nextMonth].toUpperCase()} ${time.nextMonthYear}`;
 }
 
-function setupEmptyDays(daysContainer) {
-  daysContainer.innerHTML = '';
-  for (let i = 0; i < time.dayOfWeek - 1; i++) {
-    const emptyDay = document.createElement('div');
-    emptyDay.classList.add('day');
-    daysContainer.appendChild(emptyDay);
-  }
-}
 
-function setupCurrentDays(daysContainer) {
-  for (let day = 1; day <= time.daysInMonth; day++) {
-    const dayElement = document.createElement('div');
-    dayElement.classList.add('day');
-    daysContainer.appendChild(dayElement);
-    dayElement.textContent = day.toString();
-    dayElement.setAttribute('data-day', day.toString());
-    dayElement.setAttribute('data-month', time.nextMonth.toString());
-    dayElement.setAttribute('data-year', time.nextMonthYear.toString());
-    dayElement.setAttribute('day-number', day.toString());
-    controller.addDayListeners(dayElement);
-  }
-}
 
-function setupExtraDays(daysContainer) {
-  const totalCells = daysContainer.children.length;
+function howManyDaysByType(){
+  const emptyCount = time.dayOfWeek - 1;
+  const monthCount = time.daysInMonth;
+  const totalCells =emptyCount + monthCount;
   const extraDaysNeeded = (7 - (totalCells % 7)) % 7;
-  const totalExtraDays = extraDaysNeeded + 7;
-  for (let i = 0; i < totalExtraDays; i++) {
-    const dayNumber = i + 1;
-    const dayElement = document.createElement('div');
-    dayElement.classList.add('day', 'next-month-day');
-    dayElement.textContent = dayNumber.toString();
-    dayElement.style.opacity = '0.5';
-    dayElement.setAttribute('data-day', dayNumber.toString());
-    dayElement.setAttribute('data-month', time.extraMonth.toString());
-    dayElement.setAttribute('data-year', time.extraMonthYear.toString());
-    daysContainer.appendChild(dayElement);
-    controller.addExtraDaysListeners(dayElement);
-  }
+  const extraCount = extraDaysNeeded + 7;
+  const result = new Map();
+  result.set(DayType.EMPTY,emptyCount );
+  result.set(DayType.MONTH,monthCount );
+  result.set(DayType.EXTRA,extraCount );
+  return result;
 }
 
 function setupDays() {
   const daysContainer = document.querySelector('.days-container');
-  setupEmptyDays(daysContainer);
-  setupCurrentDays(daysContainer);
-  setupExtraDays(daysContainer);
+  daysContainer.innerHTML = '';
+  calendar.createDays(howManyDaysByType());
+  calendar.attachAll();
 }
 
 export function generateCalendar() {
