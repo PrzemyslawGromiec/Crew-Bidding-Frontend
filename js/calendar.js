@@ -9,13 +9,28 @@ class DayType {
   static EXTRA = 'extra';
 }
 
+class PeriodType{
+  static WORK= 'work';
+  static OFF= 'off';
+  static NOT_DEFINED = 'not defined period type'
+}
+
 
 class Period {
 
-  constructor(start, end, id) {
-    this.start = new Date(start.setHours(0, 0, 0, 0));
-    this.end = new Date(end.setHours(23, 59, 59, 999));
+  constructor(start, end, id, type = PeriodType.NOT_DEFINED) {
+    this.start =this._startHours(start);
+    this.end = this._endHours(end);
     this.id = id;
+    this.type = type;
+  }
+
+  _startHours(date){
+    return new Date(date.setHours(0, 0, 0, 0));
+  }
+
+  _endHours(date){
+    return new Date(date.setHours(23, 59, 59, 999));
   }
 
   isInPeriod(date) {
@@ -23,6 +38,30 @@ class Period {
     return normalizedDate >= this.start && normalizedDate <= this.end;
   }
 }
+
+class CurrentPeriod extends Period{
+
+  constructor(start = new Date(), end = new Date(), id = 0, type = PeriodType.NOT_DEFINED) {
+    super(start,end,id,type);
+    this.active = false;
+  }
+
+  startNewSelection(date,type){
+    this.start = this._startHours(date);
+    this.end = this._endHours(date);
+    this.active = true;
+    this.type = type;
+  }
+
+}
+
+let currentSelection = new CurrentPeriod();
+
+//modyfikuję gdy:
+//zaczynam zaznaczenie (klik down)
+//rozciągam zaznaczenie (hover)
+//kończe zaznaczenie (klik up)
+
 
 class Time{
 
@@ -43,6 +82,14 @@ class Time{
 
 class Day{
 
+
+/*
+  todo day should change color based on current period
+  if (this.selectedColor === 'work-selected') {
+  dayElement.classList.add('temporary-work');
+}
+  */
+
   constructor(number) {
     this.daysContainer = document.querySelector('.days-container');
     this.number = number;
@@ -60,7 +107,7 @@ class Day{
     if(this.hovered){
       return;
     }
-    if(this.selected ){
+    if(this.selected){
       this.hoverEffectSelected();
     }else{
       this.hoverEffectNonSelected();
@@ -97,7 +144,8 @@ class Day{
     this.hovered = true;
     this.element.classList.add('held-down');
     this.element.innerHTML = '';
-    const emojiContainer = createEmojiContainer(this.element);
+    //todo controller is defined after!! to refactor
+    const emojiContainer = controller.createEmojiContainer(this.element);
     this.element.appendChild(emojiContainer);
   }
 
@@ -211,10 +259,6 @@ class Controller{
 
   constructor() {
     this.isSelecting = false;
-    this.startDayElement = null;
-    this.selectedColor = '';
-    this.firstSelectedElement = null;
-    this.lastHoveredElement = null;
   }
 
   addDayListeners(day){
@@ -234,18 +278,6 @@ class Controller{
       } else if (!this.isSelecting && dayElement !== this.firstSelectedElement) {
         dayElement.textContent = day.number.toString();
         dayElement.classList.remove('held-down');
-      }
-    });
-
-    dayElement.addEventListener('mousedown', () => {
-      if (!dayElement.classList.contains('final-selection')) {
-        this.isSelecting = true;
-        this.startDayElement = dayElement;
-        this.firstSelectedElement = dayElement;
-        this.lastHoveredElement = dayElement;
-        if (this.selectedColor === 'work-selected') {
-          dayElement.classList.add('temporary-work');
-        }
       }
     });
 
@@ -301,6 +333,44 @@ class Controller{
     });
   }
 
+  createEmojiContainer(day) {
+    const dayElement = day.element;
+    const emojiContainer = document.createElement('div');
+    emojiContainer.classList.add('emoji-container');
+
+    const emoji1 = document.createElement('span');
+    emoji1.textContent = '💼';
+
+    const emoji2 = document.createElement('span');
+    emoji2.innerText = '🌴';
+
+    emoji1.addEventListener('mousedown', (event) => {
+      console.log('mousedown - starting new selection for work')
+      this.isSelecting = true;
+      currentSelection.startNewSelection(new Date(),PeriodType.WORK);
+
+
+      const parentDayElement = event.target.closest('.day');
+      parentDayElement.classList.add('temporary-work');
+      parentDayElement.innerHTML = '💼';
+    });
+
+    emoji2.addEventListener('mousedown', (event) => {
+      console.log('mousedown - starting new selection for work')
+      this.isSelecting = true;
+      currentSelection.startNewSelection(new Date(),PeriodType.OFF);
+
+      const parentDayElement = event.target.closest('.day');
+      parentDayElement.classList.add('temporary-off');
+      parentDayElement.innerHTML = '🌴';
+    });
+
+    emojiContainer.appendChild(emoji1);
+    emojiContainer.appendChild(emoji2);
+    return emojiContainer;
+  }
+
+
 }
 
 
@@ -317,6 +387,8 @@ const calendar = new Calendar();
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
+
+
 
 function setupHeader() {
   const header = document.querySelector('.header');
@@ -582,37 +654,4 @@ export async function initializeFlights() {
   flights = await getFlightsForMonth();
 }
 
-function createEmojiContainer(dayElement) {
-  const emojiContainer = document.createElement('div');
-  emojiContainer.classList.add('emoji-container');
 
-  const emoji1 = document.createElement('span');
-  emoji1.textContent = '💼';
-
-  const emoji2 = document.createElement('span');
-  emoji2.innerText = '🌴';
-
-  emoji1.addEventListener('mousedown', (event) => {
-    const parentDayElement = event.target.closest('.day');
-    controller.selectedColor = 'work-selected';
-    parentDayElement.classList.add('temporary-work');
-    controller.isSelecting = true;
-
-    parentDayElement.innerHTML = '💼';
-    controller.firstSelectedElement = parentDayElement;
-  });
-
-  emoji2.addEventListener('mousedown', (event) => {
-    const parentDayElement = event.target.closest('.day');
-    controller.selectedColor = 'off-selected';
-    parentDayElement.classList.add('temporary-off');
-    controller.isSelecting = true;
-
-    parentDayElement.innerHTML = '🌴';
-    controller.firstSelectedElement = parentDayElement;
-  });
-
-  emojiContainer.appendChild(emoji1);
-  emojiContainer.appendChild(emoji2);
-  return emojiContainer;
-}
