@@ -1,8 +1,58 @@
+import {Time} from "./Time";
+import {CurrentPeriod} from "./CurrentPeriod";
+import {EmptyDay} from "./EmptyDay";
+import {MonthDay} from "./MonthDay";
+import {ExtraDay} from "./ExtraDay";
+import {DayType} from "./DayType";
+
 export class Calendar {
 
-  constructor(time) {
+
+  constructor() {
     this.days = [];
-    this.time = time;
+    this.time = new Time();
+    this.currentSelection = new CurrentPeriod();
+    this.monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"];
+  }
+
+  init(){
+    this.setupHeader();
+    this.setupDays();
+  }
+
+  setupHeader() {
+    const header = document.querySelector('.header');
+    header.innerHTML = '';
+    header.textContent = `${this.monthNames[this.time.nextMonth].toUpperCase()} ${this.time.nextMonthYear}`;
+  }
+
+  setupDays() {
+    const daysContainer = document.querySelector('.days-container');
+    daysContainer.innerHTML = '';
+    this.createDays(howManyDaysByType());
+    this.attachAll();
+  }
+
+  getDays() {
+    return this.days;
+  }
+
+  dayHovered(day){
+    if (this.currentSelection.active) {
+      this.currentSelection.updateSelection(day.date);
+      this.updateSelected(this.currentSelection);
+    } else {
+      day.hoverStart();
+    }
+  }
+
+  hoverLeave(day) {
+
+  }
+
+  daySelected(day){
+    console.log('trying to select day: ' + day)
   }
 
   createEmpty(date) {
@@ -70,15 +120,11 @@ export class Calendar {
 
   updateSelected() {
     for (const day of this.days) {
-      if (currentSelection.isInPeriod(day.date)) {
-        day.select(currentSelection.type);
+      if (this.currentSelection.isInPeriod(day.date)) {
+        day.select(this.currentSelection.type);
       }else{
         day.unselect();
       }
     }
-  }
-
-  finishSelection(){
-    //
   }
 }

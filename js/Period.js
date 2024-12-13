@@ -1,3 +1,5 @@
+import {PeriodType} from "./PeriodType";
+
 export class Period {
 
   constructor(start, end, id, type = PeriodType.NOT_DEFINED) {

@@ -1,3 +1,5 @@
+import {Day} from "./Day";
+
 export class EmptyDay extends Day {
 
   constructor(date) {

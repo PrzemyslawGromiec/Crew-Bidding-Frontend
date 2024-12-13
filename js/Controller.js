@@ -1,66 +1,55 @@
+import {Calendar} from "./Calendar";
+
 export class Controller {
 
   constructor() {
     this.isSelecting = false;
   }
 
-  initCalendar() {
-    this.setupHeader();
-    this.setupDays();
+  start() {
+    this.calendar = new Calendar();
+    this.calendar.init();
+    this.attachListeners();
   }
 
-  setupHeader() {
-    const header = document.querySelector('.header');
-    header.innerHTML = '';
-    header.textContent = `${monthNames[time.nextMonth].toUpperCase()} ${time.nextMonthYear}`;
-  }
-
-  setupDays() {
-    const daysContainer = document.querySelector('.days-container');
-    daysContainer.innerHTML = '';
-    calendar.createDays(howManyDaysByType());
-    calendar.attachAll();
-  }
-
-  addDayListeners(day) {
-    const dayElement = day.element;
-
-    // NAJECHANIE
-    dayElement.addEventListener('mouseenter', () => {
-      if (currentSelection.active) {
-        currentSelection.updateSelection(day.date);
-        calendar.updateSelected(currentSelection);
-      }else{
-        day.hoverStart();
-      }
-    });
-
-    dayElement.addEventListener('mouseleave', () => {
-      day.hoverLeave();
-      /* if (dayElement.classList.contains('final-selection')) {
-         dayElement.textContent = dayElement.getAttribute('data-day');
-       } else if (!this.isSelecting && dayElement !== this.firstSelectedElement) {
-         dayElement.textContent =this.getDayNumber();
-         dayElement.classList.remove('held-down');
-       }*/
-    });
-
-    /*  dayElement.addEventListener('mouseup', () => {
-        if (this.isSelecting) {
-          applyFinalSelection();
-          this.isSelecting = false;
-          this.startDayElement = null;
-          clearTemporarySelection();
+  attachListeners(){
+    const days = this.calendar.getDays();
+    for(const day in days){
+      //HOVER -> ew. create icons
+      day.element.addEventListener('mouseenter', () => {
+        if(this.isSelecting()){
+          this.calendar.daySelected(day);
+        }else{
+          this.calendar.dayHovered(day);
+          //ustawić działanie ikonek?
         }
+      });
 
-        if (this.firstSelectedElement) {
-          this.firstSelectedElement.textContent = this.firstSelectedElement.getAttribute('data-day');
-          this.firstSelectedElement.classList.remove('held-down');
-          this.firstSelectedElement = null;
-        }
-      });*/
+      day.element.addEventListener('mouseleave', () => {
+        this.calendar.hoverLeave(day);
+      });
+
+
+      /*  dayElement.addEventListener('mouseup', () => {
+       if (this.isSelecting) {
+         applyFinalSelection();
+         this.isSelecting = false;
+         this.startDayElement = null;
+         clearTemporarySelection();
+       }
+
+       if (this.firstSelectedElement) {
+         this.firstSelectedElement.textContent = this.firstSelectedElement.getAttribute('data-day');
+         this.firstSelectedElement.classList.remove('held-down');
+         this.firstSelectedElement = null;
+       }
+     });*/
+    }
   }
 
+
+  //todo extra days and icons?
+/*
   addExtraDaysListeners(dayElement) {
     dayElement.addEventListener('mouseenter', () => {
       if (dayElement.classList.contains('final-selection')) {
@@ -88,11 +77,11 @@ export class Controller {
         // clearTemporarySelection();
       }
 
-      /*    if (firstSelectedElement) {
+      /!*    if (firstSelectedElement) {
             firstSelectedElement.textContent = firstSelectedElement.getAttribute('data-day');
             firstSelectedElement.classList.remove('held-down');
             firstSelectedElement = null;
-          }*/
+          }*!/
     });
   }
 
@@ -132,5 +121,5 @@ export class Controller {
     emojiContainer.appendChild(emoji1);
     emojiContainer.appendChild(emoji2);
     return emojiContainer;
-  }
+  }*/
 }

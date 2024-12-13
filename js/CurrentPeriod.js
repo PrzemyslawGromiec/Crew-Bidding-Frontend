@@ -1,3 +1,6 @@
+import {Period} from "./Period";
+import {PeriodType} from "./PeriodType";
+
 export class CurrentPeriod extends Period {
 
   constructor(start = new Date(), end = new Date(), id = 0, type = PeriodType.NOT_DEFINED) {

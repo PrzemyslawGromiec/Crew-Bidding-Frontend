@@ -1,3 +1,5 @@
+import {PeriodType} from "./PeriodType";
+
 export class Day {
 
 

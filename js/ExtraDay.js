@@ -1,3 +1,5 @@
+import {Day} from "./Day";
+
 export class ExtraDay extends Day {
 
   constructor(date) {
