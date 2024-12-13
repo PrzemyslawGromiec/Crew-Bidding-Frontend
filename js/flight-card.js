@@ -1,5 +1,5 @@
 // flight-card.js
-import {flights} from './calendar.js';
+import {flights} from './Main.js';
 import {selectPeriod} from './load-sidebar';
 
 export function createFlightCard(flight) {

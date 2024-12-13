@@ -1,4 +1,4 @@
-import { workPeriods, flights } from './calendar.js';
+import { workPeriods, flights } from './Main.js';
 import { displayFlights } from "./flight-card";
 export let selectedPeriodIndex = null;
 export let selectedPeriodId = null;
