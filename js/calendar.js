@@ -7,29 +7,48 @@ class DayType {
   static EMPTY = 'empty';
   static MONTH = 'month';
   static EXTRA = 'extra';
+
+  static monthModifier(dayType) {
+    if (this.EMPTY === dayType) {
+      return -1;
+    } else if (this.MONTH === dayType) {
+      return 0;
+    } else {
+      return 1;
+    }
+  }
 }
 
-class PeriodType{
-  static WORK= 'work';
-  static OFF= 'off';
+class PeriodType {
+  static WORK = 'work';
+  static OFF = 'off';
   static NOT_DEFINED = 'not defined period type'
+
+  static getClass(periodType){
+    switch (periodType){
+      case this.WORK:
+        return "temporary-work";
+      case this.OFF:
+        return "temporary-off";
+    }
+  }
 }
 
 
 class Period {
 
   constructor(start, end, id, type = PeriodType.NOT_DEFINED) {
-    this.start =this._startHours(start);
+    this.start = this._startHours(start);
     this.end = this._endHours(end);
     this.id = id;
     this.type = type;
   }
 
-  _startHours(date){
+  _startHours(date) {
     return new Date(date.setHours(0, 0, 0, 0));
   }
 
-  _endHours(date){
+  _endHours(date) {
     return new Date(date.setHours(23, 59, 59, 999));
   }
 
@@ -39,19 +58,69 @@ class Period {
   }
 }
 
-class CurrentPeriod extends Period{
+class CurrentPeriod extends Period {
 
   constructor(start = new Date(), end = new Date(), id = 0, type = PeriodType.NOT_DEFINED) {
-    super(start,end,id,type);
+    super(start, end, id, type);
     this.active = false;
   }
 
-  startNewSelection(date,type){
+  clear() {
+    this.start = new Date();
+    this.end = new Date();
+    this.type = PeriodType.NOT_DEFINED;
+    this.active = false;
+  }
+
+  startNewSelection(date, type) {
     this.start = this._startHours(date);
     this.end = this._endHours(date);
     this.active = true;
     this.type = type;
   }
+
+  updateSelection(endDate) {
+    //dni jako elementy
+    const days = document.querySelectorAll('.day');
+
+    let [minDate, maxDate] = this.start <= endDate ? [this.start, endDate] : [endDate, this.start];
+    this.start = minDate;
+    this.end = maxDate;
+
+    /*  days.forEach(day => {
+        const dayDate = new Date(
+          parseInt(day.getAttribute('data-year')),
+          parseInt(day.getAttribute('data-month')),
+          parseInt(day.getAttribute('data-day'))
+        );
+
+        if (controller.selectedColor === 'work-selected') {
+          if (dayDate >= minDate && dayDate <= maxDate) {
+            day.classList.add('temporary-work');
+          } else if (!day.classList.contains('final-selection')) {
+            day.classList.remove('temporary-work');
+          }
+        }
+
+        if (controller.selectedColor === 'off-selected') {
+          if (
+            dayDate >= minDate &&
+            dayDate <= maxDate &&
+            startDate.getMonth() === endDate.getMonth() &&
+            startDate.getFullYear() === endDate.getFullYear()
+          ) {
+            day.classList.add('temporary-off');
+          } else if (!day.classList.contains('final-selection')) {
+            day.classList.remove('temporary-off');
+          }
+        }
+      });*/
+  }
+
+  endSelection() {
+    this.clear();
+  }
+
 
 }
 
@@ -63,7 +132,7 @@ let currentSelection = new CurrentPeriod();
 //kończe zaznaczenie (klik up)
 
 
-class Time{
+class Time {
 
   constructor() {
     const today = new Date();
@@ -80,22 +149,31 @@ class Time{
   }
 }
 
-class Day{
+class Day {
 
 
-/*
-  todo day should change color based on current period
-  if (this.selectedColor === 'work-selected') {
-  dayElement.classList.add('temporary-work');
-}
-  */
+  /*
+    todo day should change color based on current period
+    if (this.selectedColor === 'work-selected') {
+    dayElement.classList.add('temporary-work');
+  }
+    */
 
-  constructor(number) {
+  constructor(date) {
     this.daysContainer = document.querySelector('.days-container');
-    this.number = number;
     this.selected = false;
     this.hovered = false;
     this.element = null;
+    this.date = date;
+    this.selectionType = PeriodType.NOT_DEFINED;
+  }
+
+  getDayNumber() {
+    return this.date.getDate();
+  }
+
+  getMonthNumber() {
+    return this.date.getMonth();
   }
 
   attachToDom() {
@@ -103,13 +181,13 @@ class Day{
   }
 
 
-  hoverStart(){
-    if(this.hovered){
+  hoverStart() {
+    if (this.hovered) {
       return;
     }
-    if(this.selected){
+    if (this.selected) {
       this.hoverEffectSelected();
-    }else{
+    } else {
       this.hoverEffectNonSelected();
     }
   }
@@ -140,42 +218,51 @@ class Day{
     });
   }
 
-  hoverEffectNonSelected(){
+  hoverEffectNonSelected() {
     this.hovered = true;
     this.element.classList.add('held-down');
     this.element.innerHTML = '';
     //todo controller is defined after!! to refactor
-    const emojiContainer = controller.createEmojiContainer(this.element);
+    const emojiContainer = controller.createEmojiContainer(this);
     this.element.appendChild(emojiContainer);
   }
 
-  hoverLeave(){
-
+  hoverLeave() {
+    this.hovered = false;
+    this.element.textContent = this.getDayNumber();
+    this.element.classList.remove('held-down');
   }
 
-  select(){
-
+  select(periodType) {
+    this.selected = true;
+    this.selectionType = periodType;
+    this.element.classList.add(PeriodType.getClass(this.selectionType));
   }
 
+  unselect(){
+    this.selected = false;
+    this.element.classList.remove(PeriodType.getClass(this.selectionType));
+    this.selectionType = PeriodType.NOT_DEFINED;
+  }
 }
 
-class EmptyDay extends Day{
+class EmptyDay extends Day {
 
-  constructor() {
-    super(0);
+  constructor(date) {
+    super(date);
   }
 
   attachToDom() {
-      this.element = document.createElement('div');
-      this.element.classList.add('day');
-      this.daysContainer.appendChild(this.element);
-    }
+    this.element = document.createElement('div');
+    this.element.classList.add('day');
+    this.daysContainer.appendChild(this.element);
+  }
 }
 
-class MonthDay extends Day{
+class MonthDay extends Day {
 
-  constructor(number) {
-    super(number);
+  constructor(date) {
+    super(date);
   }
 
 
@@ -183,26 +270,26 @@ class MonthDay extends Day{
     this.element = document.createElement('div');
     this.element.classList.add('day');
     this.daysContainer.appendChild(this.element);
-    this.element.textContent = this.number.toString();
-    this.element.setAttribute('data-day', this.number.toString());
+    this.element.textContent = this.getDayNumber();
+    this.element.setAttribute('data-day', this.getDayNumber());
     this.element.setAttribute('data-month', time.nextMonth.toString());
     this.element.setAttribute('data-year', time.nextMonthYear.toString());
     controller.addDayListeners(this);
   }
 }
 
-class ExtraDay extends Day{
+class ExtraDay extends Day {
 
-  constructor(number) {
-    super(number);
+  constructor(date) {
+    super(date);
   }
 
   attachToDom() {
     this.element = document.createElement('div');
     this.element.classList.add('day', 'next-month-day');
-    this.element.textContent = this.number.toString();
+    this.element.textContent = this.getDayNumber();
     this.element.style.opacity = '0.5';
-    this.element.setAttribute('data-day', this.number.toString());
+    this.element.setAttribute('data-day', this.getDayNumber());
     this.element.setAttribute('data-month', time.extraMonth.toString());
     this.element.setAttribute('data-year', time.extraMonthYear.toString());
     this.daysContainer.appendChild(this.element);
@@ -210,37 +297,55 @@ class ExtraDay extends Day{
   }
 }
 
-class Calendar{
+class Calendar {
 
-  constructor() {
-    this.days = []
+  constructor(time) {
+    this.days = [];
+    this.time = time;
   }
 
-  createEmpty() {
-    return new EmptyDay();
+  createEmpty(date) {
+    return new EmptyDay(date);
   }
 
-  monthCurrent(number){
-    return new MonthDay(number);
+  monthCurrent(date) {
+    return new MonthDay(date);
   }
 
-  createExtra(number){
-    return new ExtraDay(number);
+  createExtra(date) {
+    return new ExtraDay(date);
+  }
+
+  _createDateFor(day, month, year) {
+    if (month < 0) {
+      year--;
+      month = 11;
+    } else if (month > 11) {
+      year++;
+      month = 0;
+    }
+    return new Date(year, month, day, 0, 0, 0);
   }
 
   createDays(daysByType) {
     for (let [key, value] of daysByType) {
       for (let i = 0; i < value; i++) {
+        const monthModifier = DayType.monthModifier(key);
+        const month = this.time.nextMonth + monthModifier;
+        const year = this.time.nextMonthYear;
+        let date = this._createDateFor(i+1, month, year);
         let day;
-        switch (key){
+        switch (key) {
           case DayType.EMPTY:
-           day = this.createEmpty();
+            date = this._createDateFor(value - i + 1, month, year);
+            date = this._getReverseDay(date);
+            day = this.createEmpty(date);
             break;
           case DayType.MONTH:
-            day = this.monthCurrent(i+1);
+            day = this.monthCurrent(date);
             break;
           case DayType.EXTRA:
-            day = this.createExtra(i+1);
+            day = this.createExtra(date);
             break;
         }
         this.days.push(day);
@@ -248,63 +353,87 @@ class Calendar{
     }
   }
 
-  attachAll(){
+  _getReverseDay(date) {
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+    const day = date.getDate();
+    return new Date(year, month, lastDayOfMonth - day + 1);
+  }
+
+  attachAll() {
     for (const day of this.days) {
       day.attachToDom();
     }
   }
+
+  updateSelected() {
+    for (const day of this.days) {
+      if (currentSelection.isInPeriod(day.date)) {
+        day.select(currentSelection.type);
+      }else{
+        day.unselect();
+      }
+    }
+  }
+
+  finishSelection(){
+    //
+  }
 }
 
-class Controller{
+class Controller {
 
   constructor() {
     this.isSelecting = false;
   }
 
-  addDayListeners(day){
+  addDayListeners(day) {
     const dayElement = day.element;
 
     dayElement.addEventListener('mouseenter', () => {
-      day.hoverStart();
-      if(!day.selected && this.isSelecting && this.startDayElement ){
-        this.lastHoveredElement = dayElement;
-        updateSelection();
+      if (currentSelection.active) {
+        currentSelection.updateSelection(day.date);
+        calendar.updateSelected(currentSelection);
+      }else{
+        day.hoverStart();
       }
     });
 
     dayElement.addEventListener('mouseleave', () => {
-      if (dayElement.classList.contains('final-selection')) {
-        dayElement.textContent = dayElement.getAttribute('data-day');
-      } else if (!this.isSelecting && dayElement !== this.firstSelectedElement) {
-        dayElement.textContent = day.number.toString();
-        dayElement.classList.remove('held-down');
-      }
+      day.hoverLeave();
+      /* if (dayElement.classList.contains('final-selection')) {
+         dayElement.textContent = dayElement.getAttribute('data-day');
+       } else if (!this.isSelecting && dayElement !== this.firstSelectedElement) {
+         dayElement.textContent =this.getDayNumber();
+         dayElement.classList.remove('held-down');
+       }*/
     });
 
-    dayElement.addEventListener('mouseup', () => {
-      if (this.isSelecting) {
-        applyFinalSelection();
-        this.isSelecting = false;
-        this.startDayElement = null;
-        clearTemporarySelection();
-      }
+    /*  dayElement.addEventListener('mouseup', () => {
+        if (this.isSelecting) {
+          applyFinalSelection();
+          this.isSelecting = false;
+          this.startDayElement = null;
+          clearTemporarySelection();
+        }
 
-      if (this.firstSelectedElement) {
-        this.firstSelectedElement.textContent = this.firstSelectedElement.getAttribute('data-day');
-        this.firstSelectedElement.classList.remove('held-down');
-        this.firstSelectedElement = null;
-      }
-    });
+        if (this.firstSelectedElement) {
+          this.firstSelectedElement.textContent = this.firstSelectedElement.getAttribute('data-day');
+          this.firstSelectedElement.classList.remove('held-down');
+          this.firstSelectedElement = null;
+        }
+      });*/
   }
 
-  addExtraDaysListeners(dayElement){
+  addExtraDaysListeners(dayElement) {
     dayElement.addEventListener('mouseenter', () => {
       if (dayElement.classList.contains('final-selection')) {
         showDeleteIcon(dayElement);
       }
       if (controller.isSelecting && controller.startDayElement) {
         controller.lastHoveredElement = dayElement;
-        updateSelection();
+        //todo update selection call
       }
     });
 
@@ -318,11 +447,10 @@ class Controller{
     });
 
     dayElement.addEventListener('mouseup', () => {
-      if (controller.isSelecting) {
-        applyFinalSelection();
-        controller.isSelecting = false;
-        controller.startDayElement = null;
-        clearTemporarySelection();
+      if (currentSelection.active) {
+        calendar.finishSelection();
+        // applyFinalSelection();
+        // clearTemporarySelection();
       }
 
       /*    if (firstSelectedElement) {
@@ -347,21 +475,21 @@ class Controller{
     emoji1.addEventListener('mousedown', (event) => {
       console.log('mousedown - starting new selection for work')
       this.isSelecting = true;
-      currentSelection.startNewSelection(new Date(),PeriodType.WORK);
+      day.select(PeriodType.WORK);//skoro robimy na sekcji to nie musimy docelowo bezposrednio na dniu - może przez kalendarz?
+      currentSelection.startNewSelection(day.date, PeriodType.WORK); //todo update
 
 
       const parentDayElement = event.target.closest('.day');
-      parentDayElement.classList.add('temporary-work');
       parentDayElement.innerHTML = '💼';
     });
 
     emoji2.addEventListener('mousedown', (event) => {
       console.log('mousedown - starting new selection for work')
       this.isSelecting = true;
-      currentSelection.startNewSelection(new Date(),PeriodType.OFF);
-
+      day.select(PeriodType.OFF);
+      currentSelection.startNewSelection(day.date, PeriodType.OFF);
       const parentDayElement = event.target.closest('.day');
-      parentDayElement.classList.add('temporary-off');
+
       parentDayElement.innerHTML = '🌴';
     });
 
@@ -374,7 +502,6 @@ class Controller{
 }
 
 
-
 let currentGroupId = 0;
 
 export let flights = [];
@@ -383,11 +510,10 @@ export let offPeriods = [];
 
 const time = new Time();
 const controller = new Controller();
-const calendar = new Calendar();
+const calendar = new Calendar(time);
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
-
 
 
 function setupHeader() {
@@ -397,17 +523,16 @@ function setupHeader() {
 }
 
 
-
-function howManyDaysByType(){
+function howManyDaysByType() {
   const emptyCount = time.dayOfWeek - 1;
   const monthCount = time.daysInMonth;
-  const totalCells =emptyCount + monthCount;
+  const totalCells = emptyCount + monthCount;
   const extraDaysNeeded = (7 - (totalCells % 7)) % 7;
   const extraCount = extraDaysNeeded + 7;
   const result = new Map();
-  result.set(DayType.EMPTY,emptyCount );
-  result.set(DayType.MONTH,monthCount );
-  result.set(DayType.EXTRA,extraCount );
+  result.set(DayType.EMPTY, emptyCount);
+  result.set(DayType.MONTH, monthCount);
+  result.set(DayType.EXTRA, extraCount);
   return result;
 }
 
@@ -423,58 +548,11 @@ export function generateCalendar() {
   setupDays();
 }
 
-
-function updateSelection() {
-  const days = document.querySelectorAll('.day');
-
-  const startDate = new Date(
-    parseInt(controller.startDayElement.getAttribute('data-year')),
-    parseInt(controller.startDayElement.getAttribute('data-month')),
-    parseInt(controller.startDayElement.getAttribute('data-day'))
-  );
-
-  const endDate = new Date(
-    parseInt(controller.lastHoveredElement.getAttribute('data-year')),
-    parseInt(controller.lastHoveredElement.getAttribute('data-month')),
-    parseInt(controller.lastHoveredElement.getAttribute('data-day'))
-  );
-
-  let [minDate, maxDate] = startDate <= endDate ? [startDate, endDate] : [endDate, startDate];
-
-  days.forEach(day => {
-    const dayDate = new Date(
-      parseInt(day.getAttribute('data-year')),
-      parseInt(day.getAttribute('data-month')),
-      parseInt(day.getAttribute('data-day'))
-    );
-
-    if (controller.selectedColor === 'work-selected') {
-      if (dayDate >= minDate && dayDate <= maxDate) {
-        day.classList.add('temporary-work');
-      } else if (!day.classList.contains('final-selection')) {
-        day.classList.remove('temporary-work');
-      }
-    }
-
-    if (controller.selectedColor === 'off-selected') {
-      if (
-        dayDate >= minDate &&
-        dayDate <= maxDate &&
-        startDate.getMonth() === endDate.getMonth() &&
-        startDate.getFullYear() === endDate.getFullYear()
-      ) {
-        day.classList.add('temporary-off');
-      } else if (!day.classList.contains('final-selection')) {
-        day.classList.remove('temporary-off');
-      }
-    }
-  });
-}
-
 function applyFinalSelection() {
-  const selectedPeriod = getSelectedPeriods();
+  const selectedPeriod = getSelectedPeriods();  //wszystkie zaznaczone
 
-  let conflictingPeriods = controller.selectedColor === 'work-selected' ? offPeriods : workPeriods;
+  //todo remove if not needed -> CONFLICT approach
+ /* let conflictingPeriods = controller.selectedColor === 'work-selected' ? offPeriods : workPeriods;
   let hasConflict = conflictingPeriods.some(period =>
     (selectedPeriod.start <= period.end && selectedPeriod.end >= period.start)
   );
@@ -492,12 +570,15 @@ function applyFinalSelection() {
 
     console.log("This period overlaps with another period.");
     return;
-  }
+  }*/
 
-  currentGroupId++;
+  //dodać period do zbioru periodów i posortować
+ /* currentGroupId++;
   let periodsToUpdate = controller.selectedColor === 'work-selected' ? workPeriods : offPeriods;
-  addNewPeriod(selectedPeriod, periodsToUpdate);
+  addNewPeriod(selectedPeriod, periodsToUpdate);*/
 
+
+  //łączymy periody obok siebie razem
   const gapInMillis = 24 * 60 * 60 * 1000;
   const newPeriods = mergePeriods(periodsToUpdate, gapInMillis);
 
