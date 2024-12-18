@@ -74,8 +74,8 @@ export class Day {
     this.element.classList.add('held-down');
     this.element.innerHTML = '';
     //todo controller is defined after!! to refactor
-    const emojiContainer = controller.createEmojiContainer(this);
-    this.element.appendChild(emojiContainer);
+   //todo const emojiContainer = controller.createEmojiContainer(this);
+   //todo this.element.appendChild(emojiContainer);
   }
 
   hoverLeave() {

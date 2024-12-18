@@ -14,10 +14,10 @@ export class Controller {
 
   attachListeners(){
     const days = this.calendar.getDays();
-    for(const day in days){
+    for(const day of days){
       //HOVER -> ew. create icons
       day.element.addEventListener('mouseenter', () => {
-        if(this.isSelecting()){
+        if(this.isSelecting){
           this.calendar.daySelected(day);
         }else{
           this.calendar.dayHovered(day);
@@ -123,3 +123,9 @@ export class Controller {
     return emojiContainer;
   }*/
 }
+
+
+/*todo plan
+* pojawienie się ikonek i podpiecie do nich listenerów -> podobiekty w klasie day?
+* select
+* */

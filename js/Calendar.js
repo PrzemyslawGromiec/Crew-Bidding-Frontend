@@ -30,8 +30,27 @@ export class Calendar {
   setupDays() {
     const daysContainer = document.querySelector('.days-container');
     daysContainer.innerHTML = '';
-    this.createDays(howManyDaysByType());
+    this.createDays(this.howManyDaysByType());
     this.attachAll();
+  }
+
+  attachAll() {
+    for (const day of this.days) {
+      day.attachToDom();
+    }
+  }
+
+  howManyDaysByType() {
+    const emptyCount = this.time.dayOfWeek - 1;
+    const monthCount = this.time.daysInMonth;
+    const totalCells = emptyCount + monthCount;
+    const extraDaysNeeded = (7 - (totalCells % 7)) % 7;
+    const extraCount = extraDaysNeeded + 7;
+    const result = new Map();
+    result.set(DayType.EMPTY, emptyCount);
+    result.set(DayType.MONTH, monthCount);
+    result.set(DayType.EXTRA, extraCount);
+    return result;
   }
 
   getDays() {
@@ -110,12 +129,6 @@ export class Calendar {
     const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
     const day = date.getDate();
     return new Date(year, month, lastDayOfMonth - day + 1);
-  }
-
-  attachAll() {
-    for (const day of this.days) {
-      day.attachToDom();
-    }
   }
 
   updateSelected() {
