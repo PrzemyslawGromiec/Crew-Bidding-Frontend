@@ -1,4 +1,6 @@
 import {PeriodType} from "./PeriodType";
+import {DayIcon} from "./DayIcon";
+import {Controller} from "./Controller";
 
 export class Day {
 
@@ -15,6 +17,7 @@ export class Day {
     this.selected = false;
     this.hovered = false;
     this.element = null;
+    this.activeIcons = []
     this.date = date;
     this.selectionType = PeriodType.NOT_DEFINED;
   }
@@ -43,6 +46,53 @@ export class Day {
     }
   }
 
+  hoverEffectNonSelected() {
+    this.hovered = true;
+    this.element.classList.add('held-down');
+    this.element.innerHTML = '';
+    this.addSelectionIcons();
+    //todo controller is defined after!! to refactor
+   //todo const emojiContainer = controller.createEmojiContainer(this);
+   //todo this.element.appendChild(emojiContainer);
+  }
+
+  addSelectionIcons() {
+    this.activeIcons.push(new DayIcon(PeriodType.OFF,this));
+    this.activeIcons.push(new DayIcon(PeriodType.WORK,this));
+    Controller.instance.addDayIconAction(this.activeIcons);
+    this.attachIcons();
+  }
+
+  attachIcons() {
+    //todo add class emoji-container to day div -> dodaje kółko wokoło ikon
+    // this.element.classList.add("emoji-container")
+    for (const icon of this.activeIcons)
+      this.element.appendChild(icon.element);
+    }
+
+    removeIcons(){
+      this.element.innerHTML = "";
+      this.activeIcons = [];
+    }
+
+  hoverLeave() {
+    this.hovered = false;
+    this.element.textContent = this.getDayNumber();
+    this.element.classList.remove('held-down');
+  }
+
+  select(periodType) {
+    this.selected = true;
+    this.selectionType = periodType;
+    this.element.classList.add(PeriodType.getClass(this.selectionType));
+  }
+
+  unselect(){
+    this.selected = false;
+    this.element.classList.remove(PeriodType.getClass(this.selectionType));
+    this.selectionType = PeriodType.NOT_DEFINED;
+  }
+
   hoverEffectSelected() {
     const trashIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     trashIcon.setAttribute("width", "40");  // Możesz dostosować szerokość
@@ -67,32 +117,5 @@ export class Day {
     trashIcon.addEventListener('click', function () {
       deletePeriod(this.element.getAttribute('data-group-id'));
     });
-  }
-
-  hoverEffectNonSelected() {
-    this.hovered = true;
-    this.element.classList.add('held-down');
-    this.element.innerHTML = '';
-    //todo controller is defined after!! to refactor
-   //todo const emojiContainer = controller.createEmojiContainer(this);
-   //todo this.element.appendChild(emojiContainer);
-  }
-
-  hoverLeave() {
-    this.hovered = false;
-    this.element.textContent = this.getDayNumber();
-    this.element.classList.remove('held-down');
-  }
-
-  select(periodType) {
-    this.selected = true;
-    this.selectionType = periodType;
-    this.element.classList.add(PeriodType.getClass(this.selectionType));
-  }
-
-  unselect(){
-    this.selected = false;
-    this.element.classList.remove(PeriodType.getClass(this.selectionType));
-    this.selectionType = PeriodType.NOT_DEFINED;
   }
 }

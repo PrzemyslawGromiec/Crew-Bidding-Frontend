@@ -17,7 +17,7 @@ import {Controller} from "./Controller";
 export let flights = [];
 export let workPeriods = []; //todo
 
-const controller = new Controller();
+const controller = Controller.instance;
 
 export function startCalendar() {
   controller.start();

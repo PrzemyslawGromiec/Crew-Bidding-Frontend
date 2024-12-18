@@ -4,6 +4,7 @@ import {EmptyDay} from "./EmptyDay";
 import {MonthDay} from "./MonthDay";
 import {ExtraDay} from "./ExtraDay";
 import {DayType} from "./DayType";
+import {PeriodType} from "./PeriodType";
 
 export class Calendar {
 
@@ -15,6 +16,8 @@ export class Calendar {
     this.monthNames = ["January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"];
   }
+
+  //DAYS CREATION
 
   init(){
     this.setupHeader();
@@ -57,21 +60,40 @@ export class Calendar {
     return this.days;
   }
 
+  //ACTIONS
+
   dayHovered(day){
-    if (this.currentSelection.active) {
+    if (this.currentSelection.active) { //w trakcie zaznaczania
       this.currentSelection.updateSelection(day.date);
       this.updateSelected(this.currentSelection);
-    } else {
+    } else { //bez zaznaczania
       day.hoverStart();
     }
   }
 
-  hoverLeave(day) {
+  iconClicked(icon) {
+    icon.day.removeIcons()
+    this.currentSelection.startNewSelection(icon.day,icon.periodType);
 
+    //rozpoczyna select
+    //chowa ikonki
+
+    // this.isSelecting = true;
+    // day.select(PeriodType.WORK);//skoro robimy na sekcji to nie musimy docelowo bezposrednio na dniu - może przez kalendarz?
+    // currentSelection.startNewSelection(day.date, PeriodType.WORK); //todo update
+    //
+    //
+    // const parentDayElement = event.target.closest('.day');
+    // parentDayElement.innerHTML = '💼';
   }
+
 
   daySelected(day){
     console.log('trying to select day: ' + day)
+  }
+
+  hoverLeave(day) {
+
   }
 
   createEmpty(date) {

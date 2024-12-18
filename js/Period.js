@@ -7,6 +7,7 @@ export class Period {
     this.end = this._endHours(end);
     this.id = id;
     this.type = type;
+    this.days = [];
   }
 
   _startHours(date) {

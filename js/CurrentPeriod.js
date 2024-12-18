@@ -15,11 +15,16 @@ export class CurrentPeriod extends Period {
     this.active = false;
   }
 
-  startNewSelection(date, type) {
-    this.start = this._startHours(date);
-    this.end = this._endHours(date);
+  startNewSelection(day, type) { //todo sortowanie dni zamiast start/end
+    this.start = this._startHours(day.date);
+    this.end = this._endHours(day.date);
     this.active = true;
     this.type = type;
+    this.days = [day];
+    for(const day of this.days){
+      day.select(type);
+    }
+
   }
 
   updateSelection(endDate) {
