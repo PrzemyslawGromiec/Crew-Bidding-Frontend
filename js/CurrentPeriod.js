@@ -3,29 +3,44 @@ import {PeriodType} from "./PeriodType";
 
 export class CurrentPeriod extends Period {
 
-  constructor(start = new Date(), end = new Date(), id = 0, type = PeriodType.NOT_DEFINED) {
-    super(start, end, id, type);
+  constructor( id = 0, type = PeriodType.NOT_DEFINED) {
+    super(id, type);
     this.active = false;
+    this.firstDay = null;
   }
 
   clear() {
-    this.start = new Date();
-    this.end = new Date();
+    this.days = []
     this.type = PeriodType.NOT_DEFINED;
     this.active = false;
+    this.firstDay = null;
   }
 
-  startNewSelection(day, type) { //todo sortowanie dni zamiast start/end
-    this.start = this._startHours(day.date);
-    this.end = this._endHours(day.date);
+  startNewSelection(day, type) {
     this.active = true;
     this.type = type;
     this.days = [day];
+    this.firstDay = day;
     for(const day of this.days){
       day.select(type);
     }
-
   }
+
+  firstDate() {
+    return this.firstDay.date;
+  }
+
+  updateDays(days) {
+    for(const day of this.days){ //todo copy
+      day.unselect(this.type);
+    }
+    this.days = days;
+    this.days.sort((day1, day2) => day1.date - day2.date);
+    for(const day of this.days){ //todo copy
+      day.select(this.type);
+    }
+  }
+
 
   updateSelection(endDate) {
     //dni jako elementy
@@ -68,6 +83,4 @@ export class CurrentPeriod extends Period {
   endSelection() {
     this.clear();
   }
-
-
 }

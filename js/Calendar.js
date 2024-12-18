@@ -4,7 +4,6 @@ import {EmptyDay} from "./EmptyDay";
 import {MonthDay} from "./MonthDay";
 import {ExtraDay} from "./ExtraDay";
 import {DayType} from "./DayType";
-import {PeriodType} from "./PeriodType";
 
 export class Calendar {
 
@@ -18,7 +17,6 @@ export class Calendar {
   }
 
   //DAYS CREATION
-
   init(){
     this.setupHeader();
     this.setupDays();
@@ -58,42 +56,6 @@ export class Calendar {
 
   getDays() {
     return this.days;
-  }
-
-  //ACTIONS
-
-  dayHovered(day){
-    if (this.currentSelection.active) { //w trakcie zaznaczania
-      this.currentSelection.updateSelection(day.date);
-      this.updateSelected(this.currentSelection);
-    } else { //bez zaznaczania
-      day.hoverStart();
-    }
-  }
-
-  iconClicked(icon) {
-    icon.day.removeIcons()
-    this.currentSelection.startNewSelection(icon.day,icon.periodType);
-
-    //rozpoczyna select
-    //chowa ikonki
-
-    // this.isSelecting = true;
-    // day.select(PeriodType.WORK);//skoro robimy na sekcji to nie musimy docelowo bezposrednio na dniu - może przez kalendarz?
-    // currentSelection.startNewSelection(day.date, PeriodType.WORK); //todo update
-    //
-    //
-    // const parentDayElement = event.target.closest('.day');
-    // parentDayElement.innerHTML = '💼';
-  }
-
-
-  daySelected(day){
-    console.log('trying to select day: ' + day)
-  }
-
-  hoverLeave(day) {
-
   }
 
   createEmpty(date) {
@@ -153,13 +115,43 @@ export class Calendar {
     return new Date(year, month, lastDayOfMonth - day + 1);
   }
 
-  updateSelected() {
+  //ACTIONS
+  dayHovered(day){
+    if (this.currentSelection.active) {
+      const days = this.getDaysBetween(this.currentSelection.firstDate(),day.date)
+      this.currentSelection.updateDays(days)
+    } else { //bez zaznaczania
+      day.hoverStart();
+    }
+  }
+
+  iconClicked(icon) {
+    icon.day.removeIcons()
+    this.currentSelection.startNewSelection(icon.day,icon.periodType);
+  }
+
+  hoverLeave(day) {
+
+  }
+
+
+  getDaysBetween(date1, date2) {
+    console.log("between:")
+    console.log(date1)
+    console.log(date2)
+    let start = date1;
+    let end = date2;
+    if (date1 > date2) {
+      start = date2;
+      end = date1;
+    }
+    const days = [];
     for (const day of this.days) {
-      if (this.currentSelection.isInPeriod(day.date)) {
-        day.select(this.currentSelection.type);
-      }else{
-        day.unselect();
+      const normalizedDate = new Date(day.date.setHours(0, 0, 0, 0));
+      if (normalizedDate >= start && normalizedDate <= end) {
+        days.push(day);
       }
     }
+    return days;
   }
 }

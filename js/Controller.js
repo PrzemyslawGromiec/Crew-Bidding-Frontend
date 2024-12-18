@@ -60,7 +60,6 @@ export class Controller {
       icon.element.addEventListener('mousedown', () => {
         this.calendar.iconClicked(icon);
       });
-
     }
   }
   /*

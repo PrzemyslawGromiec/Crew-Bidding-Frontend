@@ -51,9 +51,6 @@ export class Day {
     this.element.classList.add('held-down');
     this.element.innerHTML = '';
     this.addSelectionIcons();
-    //todo controller is defined after!! to refactor
-   //todo const emojiContainer = controller.createEmojiContainer(this);
-   //todo this.element.appendChild(emojiContainer);
   }
 
   addSelectionIcons() {
