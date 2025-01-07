@@ -6,9 +6,9 @@ export class PeriodType {
   static getClass(periodType){
     switch (periodType){
       case this.WORK:
-        return "temporary-work";
+        return "work";
       case this.OFF:
-        return "temporary-off";
+        return "off";
     }
   }
 

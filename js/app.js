@@ -12,7 +12,7 @@ import { getFlights, sendPeriod } from './api.js';
 
 startCalendar();
 loadSidebar();
-initializeFlights();
+// initializeFlights();
 
 
 // document.addEventListener('DOMContentLoaded', () => {

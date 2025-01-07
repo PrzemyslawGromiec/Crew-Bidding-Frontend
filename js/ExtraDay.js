@@ -6,12 +6,16 @@ export class ExtraDay extends Day {
     super(date);
   }
 
-  attachToDom() {
+  attachElement() {
     this.element = document.createElement('div');
-    this.element.classList.add('day', 'next-month-day');
     this.element.textContent = this.getDayNumber();
     this.element.style.opacity = '0.5';
     this.daysContainer.appendChild(this.element);
     //todo controller.addExtraDaysListeners(this.element);
+  }
+
+  addStartingStyle() {
+    super.addStartingStyle();
+    this.element.classList.add('next-month-day');
   }
 }

@@ -9,7 +9,6 @@ export class Controller {
     if (Controller.instance ) {
       throw new Error("Instance already created")
     }
-    this.isSelecting = false;
   }
 
   start() {
@@ -21,35 +20,22 @@ export class Controller {
   attachListeners(){
     const days = this.calendar.getDays();
     for(const day of days){
-      //HOVER -> ew. create icons
       day.element.addEventListener('mouseenter', () => {
-        if(this.isSelecting){
-          this.calendar.daySelected(day);
-        }else{
-          this.calendar.dayHovered(day);
-          //ustawić działanie ikonek?
-        }
+          this.calendar.hoverEnter(day);
       });
 
       day.element.addEventListener('mouseleave', () => {
         this.calendar.hoverLeave(day);
       });
 
-
-      /*  dayElement.addEventListener('mouseup', () => {
-       if (this.isSelecting) {
-         applyFinalSelection();
-         this.isSelecting = false;
-         this.startDayElement = null;
-         clearTemporarySelection();
-       }
-
-       if (this.firstSelectedElement) {
-         this.firstSelectedElement.textContent = this.firstSelectedElement.getAttribute('data-day');
-         this.firstSelectedElement.classList.remove('held-down');
-         this.firstSelectedElement = null;
-       }
-     });*/
+      day.element.addEventListener('mouseup', () => {
+        if (this.calendar.isSelecting()) {
+          const success = this.calendar.finishSelection();
+          if (!success) {
+            console.log('okresy sie nakladaja')
+          }
+        }
+      });
     }
   }
 

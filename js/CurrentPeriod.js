@@ -3,10 +3,11 @@ import {PeriodType} from "./PeriodType";
 
 export class CurrentPeriod extends Period {
 
-  constructor( id = 0, type = PeriodType.NOT_DEFINED) {
-    super(id, type);
+  constructor(type = PeriodType.NOT_DEFINED) {
+    super( type);
     this.active = false;
     this.firstDay = null;
+    this.lastDay = null;
   }
 
   clear() {
@@ -14,6 +15,14 @@ export class CurrentPeriod extends Period {
     this.type = PeriodType.NOT_DEFINED;
     this.active = false;
     this.firstDay = null;
+    this.lastDay = null;
+  }
+
+  //todo: dodane niedawno
+  clearColorType(days) {
+    for (const day of days) {
+      day.unselect(this.type);
+    }
   }
 
   startNewSelection(day, type) {
@@ -21,7 +30,7 @@ export class CurrentPeriod extends Period {
     this.type = type;
     this.days = [day];
     this.firstDay = day;
-    for(const day of this.days){
+    for (const day of this.days) {
       day.select(type);
     }
   }
@@ -31,15 +40,23 @@ export class CurrentPeriod extends Period {
   }
 
   updateDays(days) {
-    for(const day of this.days){ //todo copy
+    for (const day of this.days) { //todo copy
       day.unselect(this.type);
     }
     this.days = days;
     this.days.sort((day1, day2) => day1.date - day2.date);
-    for(const day of this.days){ //todo copy
+    for (const day of this.days) { //todo copy
       day.select(this.type);
     }
+
+    //todo: dodane 02.01
+    if (this.days.length) {
+      this.lastDay = this.days[this.days.length - 1];
+    } else {
+      this.lastDay = null;
+    }
   }
+
 
 
   updateSelection(endDate) {

@@ -28,6 +28,30 @@
   gap: 7px;
 }
 
+.day.selected.work {
+  background-color: rgba(54, 170, 255, 0.5);
+  outline: none;
+}
+
+.day.selected.off {
+  background-color: rgba(55, 255, 78, 0.5);
+  border: 1px dashed green;
+}
+
+.duty {
+  border: 2px dot-dash silver;
+}
+
+.duty.work {
+  background-color: #36aaff;
+}
+
+.duty.off {
+  background-color: #37ff4e;
+}
+
+
+
 
 .day {
   width: 7vw;
@@ -69,28 +93,6 @@
   outline: none;
 }
 
-
-.day.temporary-work {
-  background-color: rgba(54, 170, 255, 0.5);
-  outline: none;
-}
-
-.day.temporary-off {
-  background-color: rgba(55, 255, 78, 0.5);
-  border: 1px dashed green;
-}
-
-.day.final-selection {
-  border: 2px dot-dash silver;
-}
-
-.final-selection.work-selected {
-  background-color: #36aaff;
-}
-
-.final-selection.off-selected {
-  background-color: #37ff4e;
-}
 
 .emoji-container {
   display: grid;

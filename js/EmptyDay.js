@@ -6,9 +6,8 @@ export class EmptyDay extends Day {
     super(date);
   }
 
-  attachToDom() {
+  attachElement() {
     this.element = document.createElement('div');
-    this.element.classList.add('day');
     this.daysContainer.appendChild(this.element);
   }
 }

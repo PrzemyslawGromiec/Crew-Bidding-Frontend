@@ -2,10 +2,13 @@ import {PeriodType} from "./PeriodType";
 
 export class Period {
 
-  constructor(id, type = PeriodType.NOT_DEFINED) {
-    this.id = id;
+  constructor( type = PeriodType.NOT_DEFINED,days=[]) {
     this.type = type;
-    this.days = [];
+    this.days = days;
+  }
+
+  static createByPeriod(period){
+    return new Period(period.type,[...period.days])
   }
 
   _startHours(date) {
@@ -22,6 +25,12 @@ export class Period {
 
   endDate() {
     return this._endHours(this.days.at(-1).date);
+  }
+
+  applyDuty(){
+    for(const day of this.days){
+      day.makeDuty()
+    }
   }
 
   isInPeriod(date) {

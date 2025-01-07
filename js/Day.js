@@ -16,24 +16,28 @@ export class Day {
     this.daysContainer = document.querySelector('.days-container');
     this.selected = false;
     this.hovered = false;
+    this.duty = false;
     this.element = null;
     this.activeIcons = []
     this.date = date;
-    this.selectionType = PeriodType.NOT_DEFINED;
+    this.type = PeriodType.NOT_DEFINED;
   }
 
   getDayNumber() {
     return this.date.getDate();
   }
 
-  getMonthNumber() {
-    return this.date.getMonth();
-  }
-
   attachToDom() {
+    this.attachElement();
+    this.addStartingStyle();
+  }
+  attachElement(){
     throw new Error('Class must implement this function.');
   }
 
+  addStartingStyle(){
+    this.element.classList.add('day');
+  }
 
   hoverStart() {
     if (this.hovered) {
@@ -79,15 +83,40 @@ export class Day {
   }
 
   select(periodType) {
+    if(this.duty){
+      return;
+    }
     this.selected = true;
-    this.selectionType = periodType;
-    this.element.classList.add(PeriodType.getClass(this.selectionType));
+    this.type = periodType;
+    this.element.classList.add("selected");
+    this.element.classList.add(PeriodType.getClass(this.type));
   }
 
   unselect(){
+    if(this.duty){
+      return;
+    }
+    this.reset();
+  }
+
+  reset(){
     this.selected = false;
-    this.element.classList.remove(PeriodType.getClass(this.selectionType));
-    this.selectionType = PeriodType.NOT_DEFINED;
+    this.element.classList = "";
+    this.addStartingStyle();
+    this.type = PeriodType.NOT_DEFINED;
+  }
+
+  //to make duty must be in selected state
+  makeDuty(){
+    if(this.duty || !this.selected){
+      return;
+    }
+    let type = this.type;
+    this.reset();
+    this.type = type
+    this.element.classList.add("duty");
+    this.element.classList.add(PeriodType.getClass(type));
+    this.duty = true;
   }
 
   hoverEffectSelected() {
