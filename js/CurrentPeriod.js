@@ -4,7 +4,7 @@ import {PeriodType} from "./PeriodType";
 export class CurrentPeriod extends Period {
 
   constructor(type = PeriodType.NOT_DEFINED) {
-    super( type);
+    super(type);
     this.active = false;
     this.firstDay = null;
     this.lastDay = null;
@@ -16,13 +16,6 @@ export class CurrentPeriod extends Period {
     this.active = false;
     this.firstDay = null;
     this.lastDay = null;
-  }
-
-  //todo: dodane niedawno
-  clearColorType(days) {
-    for (const day of days) {
-      day.unselect(this.type);
-    }
   }
 
   startNewSelection(day, type) {
@@ -56,7 +49,6 @@ export class CurrentPeriod extends Period {
       this.lastDay = null;
     }
   }
-
 
 
   updateSelection(endDate) {
@@ -100,4 +92,6 @@ export class CurrentPeriod extends Period {
   endSelection() {
     this.clear();
   }
+
+
 }

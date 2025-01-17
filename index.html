@@ -13,14 +13,33 @@
     <div id="main" class="main-container">
       <div class="header"></div>
       <div class="days-container"></div>
-      <button id="delete-selected-days" class="delete-confirm">
-        <span class="delete-confirm-span">DELETED</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-        </svg>
-      </button>
+      <!--      <button id="delete-selected-days" class="delete-confirm">-->
+      <!--        <span class="delete-confirm-span">DELETED</span>-->
+      <!--        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 24 24"-->
+      <!--             stroke="currentColor" stroke-width="2">-->
+      <!--          <path stroke-linecap="round" stroke-linejoin="round"-->
+      <!--                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>-->
+      <!--        </svg>-->
+      <!--      </button>-->
+
+      <!-- Przyciski wywołujące modal -->
+      <button id="open-modal-button">Open Modal</button>
+
+      <div id="backdrop" class="backdrop"></div>
+      <div id="modal" class="modal">
+        <h3>Edit Period</h3>
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date"/>
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date"/>
+        <label for="comment">Comment:</label>
+        <textarea id="comment" placeholder="Add your comment here..."></textarea>
+        <div class="modal-buttons">
+          <button class="save-button">Save</button>
+          <button class="cancel-button">Cancel</button>
+        </div>
+      </div>
+
     </div>
     <div id="sidebar"></div>
   </div>
@@ -30,6 +49,28 @@
     <div class="extra-column"></div>
   </div>
 </div>
+<script>
+  const openModalButton = document.getElementById('open-modal-button');
+  const modal = document.getElementById('modal');
+  const backdrop = document.getElementById('backdrop');
+
+  function openModal() {
+    modal.style.display = 'block';
+    backdrop.style.display = 'block';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    backdrop.style.display = 'none';
+  }
+
+  openModalButton.addEventListener('click', openModal);
+
+  backdrop.addEventListener('click', closeModal);
+  document.querySelector('.cancel-button').addEventListener('click', closeModal);
+  document.querySelector('.save-button').addEventListener('click', closeModal);
+</script>
+
 </body>
 </html>
 

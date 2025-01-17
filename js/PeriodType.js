@@ -11,13 +11,4 @@ export class PeriodType {
         return "off";
     }
   }
-
-  static getEmojiFor(periodType) {
-    switch (periodType){
-      case this.WORK:
-        return "💼";
-      case this.OFF:
-        return "🌴";
-    }
-  }
 }

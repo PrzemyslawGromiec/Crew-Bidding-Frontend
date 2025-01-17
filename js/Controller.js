@@ -3,10 +3,10 @@ import {PeriodType} from "./PeriodType";
 
 export class Controller {
 
-   static instance = new Controller()
+  static instance = new Controller()
 
   constructor() {
-    if (Controller.instance ) {
+    if (Controller.instance) {
       throw new Error("Instance already created")
     }
   }
@@ -17,11 +17,11 @@ export class Controller {
     this.attachListeners();
   }
 
-  attachListeners(){
+  attachListeners() {
     const days = this.calendar.getDays();
-    for(const day of days){
+    for (const day of days) {
       day.element.addEventListener('mouseenter', () => {
-          this.calendar.hoverEnter(day);
+        this.calendar.hoverEnter(day);
       });
 
       day.element.addEventListener('mouseleave', () => {
@@ -48,6 +48,9 @@ export class Controller {
       });
     }
   }
+
+
+
   /*
     addExtraDaysListeners(dayElement) {
       dayElement.addEventListener('mouseenter', () => {
@@ -121,6 +124,8 @@ export class Controller {
       emojiContainer.appendChild(emoji2);
       return emojiContainer;
     }*/
+
+
 }
 
 

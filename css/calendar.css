@@ -167,14 +167,56 @@
 
 .overlap-warning {
   background-color: red !important;
-  animation: blink 0.5s step-end 6 alternate; /* 6 razy w 3 sekundy */
+  animation: blink 0.5s step-end 6 alternate;
 }
 
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
+/* Styl dla półprzezroczystego tła */
+.backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Ciemne tło z przezroczystością */
+  backdrop-filter: blur(5px); /* Efekt rozmycia */
+  z-index: 999; /* Na wierzchu zawartości strony */
 }
+
+/* Styl dla modala */
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Efekt uniesienia */
+  padding: 20px;
+  width: 400px;
+  z-index: 1000; /* Nad warstwą backdrop */
+}
+
+/* Ukrycie modala i backdrop */
+.hidden {
+  display: none;
+}
+
+/* Stylizacja zawartości modala */
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
 
 
 

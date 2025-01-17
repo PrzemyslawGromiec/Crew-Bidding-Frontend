@@ -1,11 +1,13 @@
 import {PeriodType} from "./PeriodType";
+import {Common} from "./Common";
 
 export class DayIcon{
 
-  constructor(periodType,day) {
+  constructor(periodType,day,emoji) {
     this.element = document.createElement('span');
     this.periodType = periodType;
     this.day = day;
-    this.element.textContent = PeriodType.getEmojiFor(periodType);
+    this.element.textContent = emoji;
   }
+
 }

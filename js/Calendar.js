@@ -1,10 +1,6 @@
 import {Time} from "./Time";
 import {CurrentPeriod} from "./CurrentPeriod";
 import {Period} from "./Period"
-import {EmptyDay} from "./EmptyDay";
-import {MonthDay} from "./MonthDay";
-import {ExtraDay} from "./ExtraDay";
-import {DayType} from "./DayType";
 import {PeriodType} from "./PeriodType";
 import {DayFactory} from "./DayFactory";
 
@@ -20,7 +16,7 @@ export class Calendar {
   }
 
   //DAYS CREATION
-  init(){
+  init() {
     this.setupHeader();
     this.setupDays();
   }
@@ -45,21 +41,18 @@ export class Calendar {
   }
 
   //ACTIONS
-  hoverEnter(day){
+  hoverEnter(day) {
     if (this.currentSelection.active) {
-      //active gdy zaczynam zaznaczac okres w kalendarzu
-      console.log('currentSelection is active')
-      const days = this.getDaysBetween(this.currentSelection.firstDate(),day.date)
+      const days = this.getDaysBetween(this.currentSelection.firstDate(), day.date)
       this.currentSelection.updateDays(days);
     } else {
-      //najechanie na dzien po raz pierwszy
       day.hoverStart();
     }
   }
 
   iconClicked(icon) {
     icon.day.removeIcons()
-    this.currentSelection.startNewSelection(icon.day,icon.periodType);
+    this.currentSelection.startNewSelection(icon.day, icon.periodType);
   }
 
   hoverLeave(day) {
@@ -72,20 +65,20 @@ export class Calendar {
     console.log("between:")
     console.log(date1)
     console.log(date2)
-   /* let start = date1;
-    let end = date2;
-    if (date1 > date2) {
-      start = date2;
-      end = date1;
-    }
-    const days = [];
-    for (const day of this.days) {
-      const normalizedDate = new Date(day.date.setHours(0, 0, 0, 0));
-      if (normalizedDate >= start && normalizedDate <= end) {
-        days.push(day);
-      }
-    }
-    return days;*/
+    /* let start = date1;
+     let end = date2;
+     if (date1 > date2) {
+       start = date2;
+       end = date1;
+     }
+     const days = [];
+     for (const day of this.days) {
+       const normalizedDate = new Date(day.date.setHours(0, 0, 0, 0));
+       if (normalizedDate >= start && normalizedDate <= end) {
+         days.push(day);
+       }
+     }
+     return days;*/
     const [start, end] = [date1, date2].sort((a, b) => a - b);
 
     return this.days.filter((day) => {
@@ -97,11 +90,15 @@ export class Calendar {
   }
 
   finishSelection() {
-    if(this.currentSelection.type == PeriodType.OFF){
+    if (this.currentSelection.type === PeriodType.OFF) {
       this.createDuty(Period.createByPeriod(this.currentSelection));
       this.currentSelection.clear();
+
+    /*  for(const day of this.currentSelection.days) {
+        console.log(day.getDate());
+      }*/
       //endSelection method?
-    }else if(this.currentSelection.type ==PeriodType.WORK){
+    } else if (this.currentSelection.type === PeriodType.WORK) {
       //todo unselect last one and refresh propositions
     }
 
@@ -121,7 +118,7 @@ export class Calendar {
     return true;
   }
 
-  createDuty(period){
+  createDuty(period) {
     this.periods.push(period);
     period.applyDuty();
   }
@@ -140,7 +137,7 @@ export class Calendar {
     return false;
   }
 
-  isSelecting(){
+  isSelecting() {
     return this.currentSelection.active;
   }
 
