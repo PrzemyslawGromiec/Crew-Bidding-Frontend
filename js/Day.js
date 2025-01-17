@@ -16,13 +16,19 @@ export class Day {
     this.type = PeriodType.NOT_DEFINED;
   }
 
+  getDefaultText(){
+    return ""
+  }
+
   getDayNumber() {
     return this.date.getDate();
   }
 
   attachToDom() {
     this.attachElement();
+    this.element.textContent = this.getDefaultText()
     this.addStartingStyle();
+
   }
 
   attachElement() {
@@ -57,19 +63,19 @@ export class Day {
     this.addSelectionIcons();
   }
 
-  //todo: dodane 08.01
   addSelectionIcons() {
-    this.activeIcons.push(new DayIcon(PeriodType.OFF, this, Common.getEmoji("off")));
-    this.activeIcons.push(new DayIcon(PeriodType.WORK, this, Common.getEmoji("work")));
+    this.activeIcons.push(new DayIcon( this, Common.getEmoji("off"),PeriodType.OFF));
+    this.activeIcons.push(new DayIcon(this, Common.getEmoji("work"),PeriodType.WORK));
 
-    Controller.instance.addDayIconAction(this.activeIcons);
+    Controller.instance.addSelectionIconAction(this.activeIcons);
     this.attachIcons();
   }
 
-  //todo: dodane 08.01
   addTrashIcon() {
-    const trashIcon = Common.getEmoji("trash");
-    this.activeIcons.push(new DayIcon(this.type,this,trashIcon));
+    const trashEmoji = Common.getEmoji("trash");
+    const trashIcon = new DayIcon(this,trashEmoji);
+    this.activeIcons.push(trashIcon);
+    Controller.instance.addTrashIconAction(trashIcon)
     this.attachIcons();
 
  /*   this.element.appendChild(trashIcon);
@@ -89,12 +95,13 @@ export class Day {
   removeIcons() {
     this.element.innerHTML = "";
     this.activeIcons = [];
+    this.element.textContent = this.getDefaultText()
   }
 
   hoverLeave() {
     this.hovered = false;
-    this.element.textContent = this.getDayNumber();
     this.element.classList.remove('held-down');
+    this.element.textContent = this.getDefaultText()
   }
 
   select(periodType) {
@@ -116,9 +123,11 @@ export class Day {
 
   reset() {
     this.selected = false;
+    this.duty = false
     this.element.classList = "";
     this.addStartingStyle();
     this.type = PeriodType.NOT_DEFINED;
+    this.element.textContent = this.getDefaultText()
   }
 
   //to make duty must be in selected state

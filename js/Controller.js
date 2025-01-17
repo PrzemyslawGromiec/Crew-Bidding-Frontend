@@ -39,16 +39,21 @@ export class Controller {
     }
   }
 
-
-  //todo extra days and icons?
-  addDayIconAction(activeIcons) {
+  addSelectionIconAction(activeIcons) {
     for (const icon of activeIcons) {
       icon.element.addEventListener('mousedown', () => {
-        this.calendar.iconClicked(icon);
+        this.calendar.selectBy(icon.day,icon.type);
+        icon.day.removeIcons()
       });
     }
   }
 
+  addTrashIconAction(trashIcon) {
+      trashIcon.element.addEventListener('mousedown', () => {
+        this.calendar.deleteDutyBy(trashIcon.day);
+        trashIcon.day.removeIcons()
+      });
+  }
 
 
   /*
@@ -124,8 +129,6 @@ export class Controller {
       emojiContainer.appendChild(emoji2);
       return emojiContainer;
     }*/
-
-
 }
 
 

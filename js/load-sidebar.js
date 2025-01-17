@@ -68,9 +68,6 @@ const handleFilterChange = debounce(() => {
     displayFlights([]);
     return;
   }
-
-  console.log('Updating flights for period:', period.start, period.end);
-
   let selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
   const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
 
@@ -87,7 +84,6 @@ function initializeSidebarEventListeners() {
 
   if (aircraftTypeSelect) {
     aircraftTypeSelect.addEventListener('change', () => {
-      console.log('Aircraft Type changed to:', aircraftTypeSelect.value);
       handleFilterChange();
     });
   } else {

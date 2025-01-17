@@ -18,7 +18,7 @@ export class CurrentPeriod extends Period {
     this.lastDay = null;
   }
 
-  startNewSelection(day, type) {
+  startNewSelection(day,type) {
     this.active = true;
     this.type = type;
     this.days = [day];

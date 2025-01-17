@@ -102,12 +102,10 @@ function createPeriodRadioButton(period, index) {
 }
 
 function handlePeriodSelection(period) {
-  console.log(`Selected period: ${period.start} - ${period.end}`);
   displayFlightsForPeriod(period);
 }
 
 function displayFlightsForPeriod(period) {
-  console.log(`Filtering flights for period from ${period.start} to ${period.end}`);
 
   const filteredFlights = flights.filter(flight => {
     const flightReportTime = new Date(flight.reportTime);

@@ -3,9 +3,12 @@ import {Common} from "./Common";
 
 export class DayIcon{
 
-  constructor(periodType,day,emoji) {
+  constructor(day,emoji,periodType = PeriodType.NOT_DEFINED) {
     this.element = document.createElement('span');
-    this.periodType = periodType;
+    this.type = periodType;
+    if(this.type === PeriodType.NOT_DEFINED){
+      this.type = day.type
+    }
     this.day = day;
     this.element.textContent = emoji;
   }

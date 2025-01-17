@@ -10,7 +10,14 @@ export class MonthDay extends Day {
   attachElement() {
     this.element = document.createElement('div');
     this.daysContainer.appendChild(this.element);
-    this.element.textContent = this.getDayNumber();
    //todo controller.addDayListeners(this);
   }
+
+  getDefaultText(){
+    return this.getDayNumber()
+  }
+
+
+
+
 }

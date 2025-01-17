@@ -33,6 +33,12 @@ export class Period {
     }
   }
 
+  destroy(){
+    for(const day of this.days){
+      day.reset()
+    }
+  }
+
   isInPeriod(date) {
     const normalizedDate = new Date(date.setHours(0, 0, 0, 0));
     return normalizedDate >= this.startDate() && normalizedDate <= this.endDate();
