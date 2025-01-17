@@ -44,4 +44,10 @@ export class Period {
     return normalizedDate >= this.startDate() && normalizedDate <= this.endDate();
   }
 
+  getAsDates(){
+    return {
+      "start": this.days[0].date,
+      "end": this._endHours(this.days[this.days.length-1].date)
+    }
+  }
 }

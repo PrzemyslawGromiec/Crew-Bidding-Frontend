@@ -3,6 +3,7 @@ import {CurrentPeriod} from "./CurrentPeriod";
 import {Period} from "./Period"
 import {PeriodType} from "./PeriodType";
 import {DayFactory} from "./DayFactory";
+import {Controller} from "./Controller";
 
 export class Calendar {
 
@@ -86,7 +87,7 @@ export class Calendar {
       this.currentSelection.clear();
     } else if (this.currentSelection.type === PeriodType.WORK) {
       this.currentSelection.stop();
-      //todo unselect last one and refresh propositions
+      Controller.instance.showFlights(this.currentSelection.getAsDates())
     }
     return true;
   }
