@@ -11,14 +11,19 @@ export class CurrentPeriod extends Period {
   }
 
   clear() {
-    this.days = []
+    this.updateDays([])
     this.type = PeriodType.NOT_DEFINED;
     this.active = false;
     this.firstDay = null;
     this.lastDay = null;
   }
 
+  stop(){
+    this.active =false;
+  }
+
   startNewSelection(day,type) {
+    this.clear()
     this.active = true;
     this.type = type;
     this.days = [day];

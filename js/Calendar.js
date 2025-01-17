@@ -85,6 +85,7 @@ export class Calendar {
       this.createDuty(Period.createByPeriod(this.currentSelection));
       this.currentSelection.clear();
     } else if (this.currentSelection.type === PeriodType.WORK) {
+      this.currentSelection.stop();
       //todo unselect last one and refresh propositions
     }
     return true;
