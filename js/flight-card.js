@@ -105,7 +105,7 @@ function handlePeriodSelection(period) {
   displayFlightsForPeriod(period);
 }
 
-function displayFlightsForPeriod(period) {
+export function displayFlightsForPeriod(period) {
 
   const filteredFlights = flights.filter(flight => {
     const flightReportTime = new Date(flight.reportTime);

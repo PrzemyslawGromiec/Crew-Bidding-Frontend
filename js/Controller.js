@@ -1,5 +1,7 @@
 import {Calendar} from "./Calendar";
 import {PeriodType} from "./PeriodType";
+import * as api from "./api";
+import {displayFlightsForPeriod} from './flight-card';
 
 export class Controller {
 
@@ -28,15 +30,25 @@ export class Controller {
         this.calendar.hoverLeave(day);
       });
 
-      day.element.addEventListener('mouseup', () => {
+      /*day.element.addEventListener('mouseup', () => {
         if (this.calendar.isSelecting()) {
           const success = this.calendar.finishSelection();
           if (!success) {
             console.log('okresy sie nakladaja')
           }
         }
-      });
+      });*/
     }
+
+    //todo: 18.01 - listener added to document because of drag enter functionality
+    document.addEventListener('mouseup', () => {
+      if (this.calendar.isSelecting()) {
+        const success = this.calendar.finishSelection();
+        if (!success) {
+          console.log('Okresy się nakładają.');
+        }
+      }
+    });
   }
 
   addSelectionIconAction(activeIcons) {
@@ -57,7 +69,8 @@ export class Controller {
 
 
   showFlights(dates) {
-    console.log(dates)
+    // const flights = api.getFlightsForMonth();
+    displayFlightsForPeriod(dates)
   }
 }
 

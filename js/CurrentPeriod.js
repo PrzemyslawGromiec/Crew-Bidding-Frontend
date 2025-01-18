@@ -10,17 +10,19 @@ export class CurrentPeriod extends Period {
   }
 
   clear() {
-    this.updateDays([])
+    console.log('zanim updateDays dostanie pusta tablice: ' + this.days.length)
+    this.updateDays([]);
+    console.log('Po updateDays, this.days.length:', this.days.length);
     this.type = PeriodType.NOT_DEFINED;
     this.active = false;
     this.firstDay = null;
   }
 
-  stop(){
-    this.active =false;
+  stop() {
+    this.active = false;
   }
 
-  startNewSelection(day,type) {
+  startNewSelection(day, type) {
     this.clear()
     this.active = true;
     this.type = type;
@@ -40,6 +42,7 @@ export class CurrentPeriod extends Period {
       day.unselect(this.type);
     }
     this.days = days;
+    console.log('----------------------------------');
     this.days.sort((day1, day2) => day1.date - day2.date);
     for (const day of this.days) { //todo copy
       day.select(this.type);

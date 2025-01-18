@@ -46,6 +46,7 @@ export class Calendar {
     if (this.currentSelection.active) {
       const days = this.getDaysBetween(this.currentSelection.firstDate(), day.date)
       this.currentSelection.updateDays(days);
+
     } else {
       day.hoverStart();
     }
@@ -76,7 +77,6 @@ export class Calendar {
     return this.days.filter((day) => {
       const normalizedDate = new Date(day.date);
       normalizedDate.setHours(0, 0, 0, 0);
-
       return normalizedDate >= start && normalizedDate <= end;
     });
   }
