@@ -4,7 +4,7 @@ import {PeriodType} from "./PeriodType";
 export class CurrentPeriod extends Period {
 
   constructor(type = PeriodType.NOT_DEFINED) {
-    super(type,[]);
+    super(type);
     this.active = false;
     this.firstDay = null;
   }
