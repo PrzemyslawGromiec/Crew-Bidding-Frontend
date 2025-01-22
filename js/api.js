@@ -1,5 +1,8 @@
+import {FlightBar} from "./FlightBar";
+
 const DOMAIN = "http://localhost:8080/";
 export let originalFlights = [];
+let flightBar = null
 
 export async function getFlightsForMonth(criteria) {
   try {
@@ -35,8 +38,10 @@ export async function getFlights(criteria) {
     }
     const data = await response.json();
     console.log('Received flights:', data);
-    const { displayFlights } = await import('./flight-card.js');
-    displayFlights(data);
+    // const { displayFlights } = await import('./flight-card.js');
+    // displayFlights(data);
+    // const flightBar = new FlightBar(data);
+    // flightBar.showAllFlights()
 
     return data;
   } catch (error) {

@@ -43,6 +43,9 @@ export function createFlightCard(flight) {
   return card;
 }
 
+
+
+
 export function formatDateTime(dateTimeString) {
   const date = new Date(dateTimeString);
 
@@ -53,56 +56,6 @@ export function formatDateTime(dateTimeString) {
   const minutes = String(date.getMinutes()).padStart(2, '0');
 
   return `${day}/${month}/${year} - ${hours}:${minutes}`;
-}
-
-export function initializePeriodRadioButtons(workPeriods) {
-  const radioInputContainer = document.querySelector('.radio-input');
-  radioInputContainer.innerHTML = '';
-
-  const titleDiv = document.createElement('div');
-  titleDiv.classList.add('periods-title');
-  titleDiv.innerHTML = '<p class="periods">SELECT PERIOD</p>';
-
-  const buttonsDiv = document.createElement('div');
-  buttonsDiv.classList.add('radio-buttons-container');
-
-  if (workPeriods.length === 0) {
-    buttonsDiv.innerHTML = '<p>No periods available</p>';
-  } else {
-    workPeriods.forEach((period, index) => {
-      const radioButton = createPeriodRadioButton(period, index);
-      buttonsDiv.appendChild(radioButton);
-    });
-  }
-
-  radioInputContainer.appendChild(titleDiv);
-  radioInputContainer.appendChild(buttonsDiv);
-}
-
-function createPeriodRadioButton(period, index) {
-  const label = document.createElement('label');
-  label.classList.add('label');
-
-  const input = document.createElement('input');
-  input.type = 'radio';
-  input.name = 'periodRadio';
-  input.value = index;
-
-  input.addEventListener('change', () => {
-    selectPeriod(index);
-  });
-
-  const span = document.createElement('span');
-  span.classList.add('check');
-
-  label.appendChild(input);
-  label.appendChild(span);
-
-  return label;
-}
-
-function handlePeriodSelection(period) {
-  displayFlightsForPeriod(period);
 }
 
 export function displayFlightsForPeriod(period) {

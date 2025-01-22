@@ -1,5 +1,7 @@
 import {Calendar} from "./Calendar";
 import {displayFlightsForPeriod} from './flight-card';
+import {FlightBar} from "./FlightBar";
+import { getFlights } from './api.js';
 
 export class Controller {
 
@@ -9,6 +11,13 @@ export class Controller {
     if (Controller.instance) {
       throw new Error("Instance already created")
     }
+    this.flightBar = new FlightBar()
+    getFlights().then(data =>  {
+      console.log('bla')
+      this.flightBar.allFlightsData = data
+      this.flightBar.showAllFlights()
+      console.log(data)
+    })
   }
 
   start() {
@@ -58,6 +67,6 @@ export class Controller {
 
   showFlights(dates) {
     // const flights = api.getFlightsForMonth();
-    displayFlightsForPeriod(dates)
+    this.flightBar.showFlightsForPeriod(dates)
   }
 }
