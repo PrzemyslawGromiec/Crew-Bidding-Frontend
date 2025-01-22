@@ -43,10 +43,10 @@ export class Calendar {
 
   //ACTIONS
   hoverEnter(day) {
+    console.log('czy currentSelecetion is active?: ' + this.currentSelection.active)
     if (this.currentSelection.active) {
       const days = this.getDaysBetween(this.currentSelection.firstDate(), day.date)
       this.currentSelection.updateDays(days);
-
     } else {
       day.hoverStart();
     }
@@ -65,7 +65,6 @@ export class Calendar {
     this.periods.splice(periodIndex,1)
     period.destroy()
   }
-
 
   hoverLeave(day) {
     day.removeIcons();
@@ -87,7 +86,8 @@ export class Calendar {
       this.currentSelection.clear();
     } else if (this.currentSelection.type === PeriodType.WORK) {
       this.currentSelection.stop();
-      Controller.instance.showFlights(this.currentSelection.getAsDates())
+      let asDates = this.currentSelection.getAsDates();
+      Controller.instance.showFlights(asDates);
     }
     return true;
   }

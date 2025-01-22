@@ -12,11 +12,14 @@ export class Period {
   }
 
   _startHours(date) {
-    return new Date( date.setHours(0, 0, 0, 0));
+    const copy = new Date(date.getTime());
+    return new Date(copy.setHours(0, 0, 0, 0));
   }
 
+
   _endHours(date) {
-    return new Date(date.setHours(23, 59, 59, 999));
+    const copy = new Date(date.getTime());
+    return new Date(copy.setHours(23, 59, 59, 999));
   }
 
   startDate(){
@@ -35,7 +38,7 @@ export class Period {
 
   destroy(){
     for(const day of this.days){
-      day.reset()
+      day.resetDay();
     }
   }
 
@@ -45,9 +48,22 @@ export class Period {
   }
 
   getAsDates(){
-    return {
-      "start": this.days[0].date,
-      "end": this._endHours(this.days[this.days.length-1].date)
+
+    if (!this.days || this.days.length === 0) {
+      console.warn('Empty array.');
+      return null;
     }
+
+    if (this.days.length === 1) {
+      return {
+        "start": this._startHours(this.days[0].date),
+        "end": this._endHours(this.days[0].date)
+      };
+    }
+
+    return {
+      "start": this._startHours(this.days[0].date),
+      "end": this._endHours(this.days[this.days.length - 1].date)
+    };
   }
 }

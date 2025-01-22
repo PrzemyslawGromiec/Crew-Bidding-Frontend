@@ -58,6 +58,7 @@ export class Day {
 
   hoverEffectNonDuty() {
     this.hovered = true;
+    console.log('is hovered? ' + this.hovered)
     this.element.classList.add('held-down');
     this.element.innerHTML = '';
     this.addSelectionIcons();
@@ -118,10 +119,10 @@ export class Day {
     if (this.duty) {
       return;
     }
-    this.reset();
+    this.resetDay();
   }
 
-  reset() {
+  resetDay() {
     this.selected = false;
     this.duty = false
     this.element.classList = "";
@@ -130,14 +131,12 @@ export class Day {
     this.element.textContent = this.getDefaultText()
   }
 
-  //to make duty must be in selected state
-
   makeDuty() {
     if (this.duty || !this.selected) {
       return;
     }
     let type = this.type;
-    this.reset();
+    this.resetDay();
     this.type = type
     this.element.classList.add("duty");
     this.element.classList.add(PeriodType.getClass(type));

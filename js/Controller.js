@@ -1,6 +1,4 @@
 import {Calendar} from "./Calendar";
-import {PeriodType} from "./PeriodType";
-import * as api from "./api";
 import {displayFlightsForPeriod} from './flight-card';
 
 export class Controller {
@@ -29,18 +27,8 @@ export class Controller {
       day.element.addEventListener('mouseleave', () => {
         this.calendar.hoverLeave(day);
       });
-
-      /*day.element.addEventListener('mouseup', () => {
-        if (this.calendar.isSelecting()) {
-          const success = this.calendar.finishSelection();
-          if (!success) {
-            console.log('okresy sie nakladaja')
-          }
-        }
-      });*/
     }
 
-    //todo: 18.01 - listener added to document because of drag enter functionality
     document.addEventListener('mouseup', () => {
       if (this.calendar.isSelecting()) {
         const success = this.calendar.finishSelection();
@@ -73,9 +61,3 @@ export class Controller {
     displayFlightsForPeriod(dates)
   }
 }
-
-
-/*todo plan
-* pojawienie się ikonek i podpiecie do nich listenerów -> podobiekty w klasie day?
-* select
-* */

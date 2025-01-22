@@ -4,15 +4,13 @@ import {PeriodType} from "./PeriodType";
 export class CurrentPeriod extends Period {
 
   constructor(type = PeriodType.NOT_DEFINED) {
-    super(type);
+    super(type,[]);
     this.active = false;
     this.firstDay = null;
   }
 
   clear() {
-    console.log('zanim updateDays dostanie pusta tablice: ' + this.days.length)
     this.updateDays([]);
-    console.log('Po updateDays, this.days.length:', this.days.length);
     this.type = PeriodType.NOT_DEFINED;
     this.active = false;
     this.firstDay = null;
@@ -38,14 +36,14 @@ export class CurrentPeriod extends Period {
   }
 
   updateDays(days) {
-    for (const day of this.days) { //todo copy
+    for (const day of this.days) {
       day.unselect(this.type);
     }
     this.days = days;
-    console.log('----------------------------------');
     this.days.sort((day1, day2) => day1.date - day2.date);
-    for (const day of this.days) { //todo copy
+    for (const day of this.days) {
       day.select(this.type);
+
     }
   }
 }
