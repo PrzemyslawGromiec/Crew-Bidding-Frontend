@@ -16,9 +16,18 @@ export class Day {
     this.type = PeriodType.NOT_DEFINED;
   }
 
+  getSelectableTypes(){
+    return PeriodType.getAll()
+  }
+
+  canStartSelection(){
+    return true
+  }
+
   getDefaultText(){
     return ""
   }
+
 
   getDayNumber() {
     return this.date.getDate();
@@ -57,6 +66,9 @@ export class Day {
   }
 
   hoverEffectNonDuty() {
+    if (!this.canStartSelection()) {
+      return
+    }
     this.hovered = true;
     console.log('is hovered? ' + this.hovered)
     this.element.classList.add('held-down');
@@ -106,6 +118,9 @@ export class Day {
   }
 
   select(periodType) {
+    if (!this.getSelectableTypes().includes(periodType)) {
+      return;
+    }
     if (this.duty) {
       return;
     }

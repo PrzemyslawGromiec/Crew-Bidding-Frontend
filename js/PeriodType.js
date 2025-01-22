@@ -11,4 +11,9 @@ export class PeriodType {
         return "off";
     }
   }
+
+  static getAll() {
+    return [this.WORK,this.OFF]
+  }
+
 }

@@ -1,9 +1,19 @@
 import {Day} from "./Day";
+import {PeriodType} from "./PeriodType";
 
 export class ExtraDay extends Day {
 
   constructor(date) {
     super(date);
+  }
+
+
+  getSelectableTypes() {
+    return [PeriodType.WORK];
+  }
+
+  canStartSelection(){
+    return false
   }
 
   attachElement() {
