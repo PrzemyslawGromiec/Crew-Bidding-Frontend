@@ -39,11 +39,17 @@ export class CurrentPeriod extends Period {
     for (const day of this.days) {
       day.unselect(this.type);
     }
+    if (this._findDuty(days)){
+      return;
+    }
     this.days = days;
     this.days.sort((day1, day2) => day1.date - day2.date);
     for (const day of this.days) {
       day.select(this.type);
-
     }
+  }
+
+  _findDuty(days){
+    return days.filter(day => day.duty).length > 0;
   }
 }
