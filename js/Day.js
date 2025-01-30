@@ -161,7 +161,6 @@ export class Day {
     return this.date;
   }
 
-
   sameAs(date) {
     return Common.sameAs(this.date, date);
   }

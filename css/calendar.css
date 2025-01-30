@@ -38,7 +38,7 @@
   background-color: #fe17b4;
   outline: none;
 }*/
-.day.selected.highlighted {
+.day.highlighted {
   background: linear-gradient(90deg, red, orange, yellow, moccasin);
   background-size: 400% 400%;
   animation: rainbowGradient 3s ease infinite;

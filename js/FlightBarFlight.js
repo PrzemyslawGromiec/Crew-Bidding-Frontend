@@ -73,6 +73,4 @@ export class FlightBarFlight {
     tooltip.classList.add('tooltip-hidden');
     tooltip.classList.remove('tooltip-visible');
   }
-
-
 }
