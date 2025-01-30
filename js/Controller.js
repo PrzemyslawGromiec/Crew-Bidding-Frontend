@@ -67,7 +67,7 @@ export class Controller {
     });
 
     element.addEventListener('click',()=>{
-      this.calendar.createWorkDuty(flightBar.getCoveredDays());
+      this.calendar.createWorkDuty(flightBar.getCoveredDays(),flightBar.flightData);
     })
   }
 
@@ -79,7 +79,6 @@ export class Controller {
   }
 
   showFlights(dates) {
-    // const flights = api.getFlightsForMonth();
     this.flightSidebar.showFlightsForPeriod(dates)
   }
 }

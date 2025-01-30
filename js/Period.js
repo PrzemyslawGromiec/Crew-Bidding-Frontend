@@ -5,6 +5,7 @@ export class Period {
   constructor( type = PeriodType.NOT_DEFINED,days=[]) {
     this.type = type;
     this.days = days;
+    this.flightData = null;
   }
 
   static createByPeriod(period){

@@ -10,7 +10,7 @@ export class Calendar {
 
   constructor() {
     this.days = [];
-    this.periods = [];
+    this.dutyPeriods = [];
     this.time = new Time();
     this.currentSelection = new CurrentPeriod();
     this.monthNames = ["January", "February", "March", "April", "May", "June",
@@ -57,12 +57,12 @@ export class Calendar {
   }
 
   deleteDutyBy(day) {
-    const period = this.periods.find(period => period.isInPeriod(day.date));
-    const periodIndex = this.periods.indexOf(period)
+    const period = this.dutyPeriods.find(period => period.isInPeriod(day.date));
+    const periodIndex = this.dutyPeriods.indexOf(period)
     if (periodIndex === -1) {
       return
     }
-    this.periods.splice(periodIndex,1)
+    this.dutyPeriods.splice(periodIndex,1)
     period.destroy()
   }
 
@@ -92,17 +92,21 @@ export class Calendar {
     return true;
   }
 
-  createDuty() {
+  createDuty(flightData = null) {
     const newPeriod = Period.createByPeriod(this.currentSelection);
-    this.periods.push(newPeriod);
+    if (flightData != null) {
+      newPeriod.flightData = flightData
+    }
+    this.dutyPeriods.push(newPeriod);
     newPeriod.applyDuty();
+    console.log(this.dutyPeriods);
   }
 
-  createWorkDuty(dates){
+  createWorkDuty(dates,flightData){
     const days =this.getDaysByDates(dates);
     this.selectBy(days[0],PeriodType.WORK);
     this.currentSelection.updateDays(days);
-    this.createDuty();
+    this.createDuty(flightData);
     this.currentSelection.clear();
   }
 
