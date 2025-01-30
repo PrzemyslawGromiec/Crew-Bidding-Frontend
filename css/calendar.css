@@ -33,6 +33,31 @@
   outline: none;
 }
 
+/*.day.selected.highlighted {
+  transition: background-color 0.9s ease;
+  background-color: #fe17b4;
+  outline: none;
+}*/
+.day.selected.highlighted {
+  background: linear-gradient(90deg, red, orange, yellow, moccasin);
+  background-size: 400% 400%;
+  animation: rainbowGradient 3s ease infinite;
+  border: 1px solid moccasin;
+}
+
+@keyframes rainbowGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
 .day.selected.off {
   background-color: rgba(55, 255, 78, 0.5);
   border: 1px dashed green;
@@ -67,17 +92,6 @@
   user-select: none;
   position: relative;
 }
-
-/*@keyframes loader {*/
-/*  0% {*/
-/*    rotate: 0deg;*/
-/*  }*/
-/*  100% {*/
-/*    border-radius: 70%;*/
-/*    rotate: 360deg;*/
-/*  }*/
-/*}*/
-
 
 .day:active {
   outline: none;
@@ -214,11 +228,3 @@
   display: flex;
   justify-content: space-between;
 }
-
-
-
-
-
-
-
-

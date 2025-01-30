@@ -1,11 +1,12 @@
 import {flights} from "./Main";
-import {createFlightCard} from "./flight-card";
+import {Controller} from "./Controller";
 
 export class FlightBarFlight {
+
   constructor(flightData) {
     this.flightData = flightData
-    this.element = this.createElement()
-    this.attachHoverListener()
+    this.element = this.createElement();
+    Controller.instance.attachFlightBarListeners(this);
   }
 
   createElement(){
@@ -26,29 +27,6 @@ export class FlightBarFlight {
     return element;
   }
 
-  attachHoverListener(){
-    this.element.addEventListener('mouseenter', () => {
-      const tooltip = this.element.querySelector('.flight-card-tooltip');
-      const tooltipRect = tooltip.getBoundingClientRect();
-      const cardRect = this.element.getBoundingClientRect();
-
-      if (cardRect.top - tooltipRect.height - 10 < 0) {
-        tooltip.classList.remove('tooltip-top');
-      } else {
-        tooltip.classList.add('tooltip-top');
-      }
-
-      tooltip.style.visibility = 'visible';
-      tooltip.style.opacity = '1';
-    });
-
-    this.element.addEventListener('mouseleave', () => {
-      const tooltip = this.element.querySelector('.flight-card-tooltip');
-      tooltip.style.visibility = 'hidden';
-      tooltip.style.opacity = '0';
-    });
-  }
-
   formatDateTime(dateTimeString) {
     const date = new Date(dateTimeString);
 
@@ -60,5 +38,41 @@ export class FlightBarFlight {
 
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
   }
+
+  getCoveredDays() {
+    const start = new Date(this.flightData.reportTime);
+    const end = new Date(this.flightData.clearTime);
+    const coveredDays = [];
+
+    const current = new Date(start);
+    while (current <= end) {
+      coveredDays.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+    coveredDays.push(end);
+    return coveredDays;
+  }
+
+  showTooltip(){
+    const tooltip = this.element.querySelector('.flight-card-tooltip');
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const cardRect = this.element.getBoundingClientRect();
+
+    if (cardRect.top - tooltipRect.height - 10 < 0) {
+      tooltip.classList.remove('tooltip-top');
+    } else {
+      tooltip.classList.add('tooltip-top');
+    }
+
+    tooltip.classList.add('tooltip-visible');
+    tooltip.classList.remove('tooltip-hidden');
+  }
+
+  hideTooltip(){
+    const tooltip = this.element.querySelector('.flight-card-tooltip');
+    tooltip.classList.add('tooltip-hidden');
+    tooltip.classList.remove('tooltip-visible');
+  }
+
 
 }

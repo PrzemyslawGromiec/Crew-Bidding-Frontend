@@ -1,4 +1,3 @@
-// webpack.Common.js
 const path = require('path');
 
 module.exports = {
@@ -7,9 +6,9 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[contenthash].js', // Dodaje hash dla cache busting
-    assetModuleFilename: 'assets/[hash][ext][query]', // Lokalizacja assetów
-    clean: true, // Czyści katalog `dist` przed każdym buildem
+    filename: '[name].[contenthash].js',
+    assetModuleFilename: 'assets/[hash][ext][query]',
+    clean: true,
   },
   module: {
     rules: [
@@ -24,15 +23,15 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/i, // Reguła dla plików .css
-        use: ['style-loader', 'css-loader'], // Loadery do ładowania CSS
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(png|jpg|gif|svg)$/i, // Reguła dla obrazów
+        test: /\.(png|jpg|gif|svg)$/i,
         type: 'asset/resource',
       },
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i, // Reguła dla fontów
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
       },
     ],
@@ -40,5 +39,11 @@ module.exports = {
   resolve: {
     extensions: ['.js'], // Rozszerzenia, które Webpack będzie rozpoznawał
     modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
+  },
+  stats: {
+    warnings: true,
+    errors: true,
+    modules: true,
+    reasons: true,
   },
 };

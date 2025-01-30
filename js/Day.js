@@ -70,7 +70,6 @@ export class Day {
       return
     }
     this.hovered = true;
-    console.log('is hovered? ' + this.hovered)
     this.element.classList.add('held-down');
     this.element.innerHTML = '';
     this.addSelectionIcons();
@@ -161,4 +160,17 @@ export class Day {
   getDate() {
     return this.date;
   }
+
+
+  sameAs(date) {
+    return Common.sameAs(this.date, date);
+  }
+
+  setHighlighted(highlighted){
+    this.element.classList.remove('highlighted');
+    if (highlighted){
+      this.element.classList.add('highlighted');
+    }
+  }
+
 }

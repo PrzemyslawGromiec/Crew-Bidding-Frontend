@@ -4,6 +4,7 @@ import {Period} from "./Period"
 import {PeriodType} from "./PeriodType";
 import {DayFactory} from "./DayFactory";
 import {Controller} from "./Controller";
+import {Common} from "./Common";
 
 export class Calendar {
 
@@ -43,7 +44,6 @@ export class Calendar {
 
   //ACTIONS
   hoverEnter(day) {
-    console.log('czy currentSelecetion is active?: ' + this.currentSelection.active)
     if (this.currentSelection.active) {
       const days = this.getDaysBetween(this.currentSelection.firstDate(), day.date)
       this.currentSelection.updateDays(days);
@@ -99,6 +99,16 @@ export class Calendar {
 
   isSelecting() {
     return this.currentSelection.active;
+  }
+
+  setHighlighted(dates,highlighted){
+    this.getDaysByDates(dates).forEach(day => day.setHighlighted(highlighted))
+  }
+
+  getDaysByDates(dates){
+    return this.days.filter(day =>
+      dates.filter(date => day.sameAs(date)).length !== 0
+    )
   }
 
   //GETTERS

@@ -1,18 +1,15 @@
-import {FlightBarFlight} from "./FlightBarFlight";
 import {flights} from "./Main";
-import {createFlightCard} from "./flight-card";
+import {FlightBarFlight} from "./FlightBarFlight";
 
-export class FlightBar{
-
+export class FlightSidebar{
   constructor() {
-    this._allFlightsData = []
-    this.flights = []
+    this._allFlightsData = [];
+    this.flights = [];
   }
 
   set allFlightsData(value) {
     this._allFlightsData = value;
   }
-
 
   get allFlightsData() {
     return this._allFlightsData;
@@ -33,13 +30,13 @@ export class FlightBar{
   }
 
   showFlights(flightsData){
-   const flightsContainer = document.querySelector('.extra-column');
-   flightsContainer.innerHTML = "";
+    const flightsContainer = document.querySelector('.extra-column');
+    flightsContainer.innerHTML = "";
     if (flightsData.length === 0) {
       flightsContainer.innerHTML = "<p>No flights found for the selected criteria.</p>";
       return;
     }
-   this.flights = []
+    this.flights = []
     for (const flightData of flightsData) {
       const flight =new FlightBarFlight(flightData)
       this.flights.push(flight);

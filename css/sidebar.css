@@ -150,21 +150,6 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 .125rem .562rem -0.125rem rgba(0,0,0, .25);
 }
 
-.tooltip {
-  padding: .25rem .5rem;
-  border: 0;
-  background: #565d64;
-  color: white;
-  font-size: .75rem;
-  line-height: 1.2;
-  border-radius: .25rem;
-  bottom: 120%;
-  display: block;
-  position: absolute;
-  text-align: center;
-  white-space: nowrap;
-}
-
 .min-tooltip {
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
@@ -232,6 +217,3 @@ input[type="range"]::-moz-range-thumb {
 .input-field:focus {
   outline: none;
 }
-
-
-

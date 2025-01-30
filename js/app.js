@@ -8,17 +8,10 @@ import '../css/flight-card.css';
 import { startCalendar, initializeFlights } from './Main.js';
 import loadSidebar from './load-sidebar.js';
 import { getFlights, sendPeriod } from './api.js';
-
-
+// import {FlightBar} from "./FlightBar";
 
 startCalendar();
 loadSidebar();
 initializeFlights();
 
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   generateCalendar();
-//   loadSidebar();
-// });
-
-export { getFlights, sendPeriod };
+export { getFlights, sendPeriod};
