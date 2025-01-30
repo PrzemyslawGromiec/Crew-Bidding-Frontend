@@ -82,7 +82,7 @@ export class Calendar {
 
   finishSelection() {
     if (this.currentSelection.type === PeriodType.OFF) {
-      this.createDuty(Period.createByPeriod(this.currentSelection));
+      this.createDuty();
       this.currentSelection.clear();
     } else if (this.currentSelection.type === PeriodType.WORK) {
       this.currentSelection.stop();
@@ -92,9 +92,18 @@ export class Calendar {
     return true;
   }
 
-  createDuty(period) {
-    this.periods.push(period);
-    period.applyDuty();
+  createDuty() {
+    const newPeriod = Period.createByPeriod(this.currentSelection);
+    this.periods.push(newPeriod);
+    newPeriod.applyDuty();
+  }
+
+  createWorkDuty(dates){
+    const days =this.getDaysByDates(dates);
+    this.selectBy(days[0],PeriodType.WORK);
+    this.currentSelection.updateDays(days);
+    this.createDuty();
+    this.currentSelection.clear();
   }
 
   isSelecting() {

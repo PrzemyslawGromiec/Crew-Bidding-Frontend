@@ -65,6 +65,10 @@ export class Controller {
       flightBar.hideTooltip();
       this.calendar.setHighlighted(flightBar.getCoveredDays(),false);
     });
+
+    element.addEventListener('click',()=>{
+      this.calendar.createWorkDuty(flightBar.getCoveredDays());
+    })
   }
 
   addTrashIconAction(trashIcon) {
