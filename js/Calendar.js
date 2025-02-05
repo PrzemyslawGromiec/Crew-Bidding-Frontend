@@ -17,10 +17,13 @@ export class Calendar {
       "July", "August", "September", "October", "November", "December"];
   }
 
+
+
   //DAYS CREATION
   init() {
     this.setupHeader();
     this.setupDays();
+    console.log("starting app");
   }
 
   setupHeader() {
