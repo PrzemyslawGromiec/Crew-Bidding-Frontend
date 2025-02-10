@@ -8,34 +8,28 @@ export class FilterBar {
   constructor() {
     this.aircraftTypeSelect = document.getElementById('aircraftType');
     this.airportCodeInput = document.getElementById('airportCode');
+    this.initializeSidebarEventListeners();
   }
 
-  getFilters(){
-    let selectedAircraftType = this.aircraftTypeSelect ? this.aircraftTypeSelect.value : '';
+  getFilters() {
+    let selectedAircraftType = this.aircraftTypeSelect && this.aircraftTypeSelect.value !== "ALL TYPES" ?
+      this.aircraftTypeSelect.value : '';
     const airportCodeValue = this.airportCodeInput ? this.airportCodeInput.value.toUpperCase() : '';
-    return new Filters(null,selectedAircraftType,airportCodeValue);
+    return new Filters(null, selectedAircraftType, airportCodeValue);
   }
 
 
   initializeSidebarEventListeners() {
-    if (this.aircraftTypeSelect) {
-      this.aircraftTypeSelect.addEventListener('change', () => {
-        Controller.instance.handleFilterChange();
-      });
-    } else {
-      console.error('Aircraft type select element not found.');
-    }
-    if (this.airportCodeInput) {
-      this.airportCodeInput.addEventListener('input', () => {
-        Controller.instance.handleFilterChange();
-      });
-    } else {
-      console.error('Airport code input element not found.');
-    }
+    this.aircraftTypeSelect.addEventListener('change', () => {
+      Controller.instance.handleFilterChange(this.getFilters());
+    });
+    this.airportCodeInput.addEventListener('input', () => {
+      Controller.instance.handleFilterChange(this.getFilters());
+    });
   }
 
   delayHandleFilterChange() {
-    debounce(this.handleFilterChange,300)
+    debounce(this.handleFilterChange, 300)
   }
 
   handleFilterChange() {

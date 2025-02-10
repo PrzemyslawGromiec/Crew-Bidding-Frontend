@@ -21,20 +21,24 @@ export class FlightSidebar {
     } else {
       this.filters.update(filters);
     }
+    console.log(this.filters)
     const flights = this.filterFlights();
     this.showFlights(flights);
   }
 
   filterFlights() {
-    const flights = [...this._allFlightsData]
-    if (this.filters.dates == null) {
-      return flights;
-    }
+    let flights = [...this._allFlightsData]
+
     return flights.filter(flight => {
       const flightReportTime = new Date(flight.reportTime);
       const flightClearTime = new Date(flight.clearTime);
-      return flightReportTime >= this.filters.dates.start && flightClearTime <= this.filters.dates.end;
-    });
+      return this.filters.date == null ||
+        (flightReportTime >= this.filters.dates.start &&
+          flightClearTime <= this.filters.dates.end);
+    }).filter(flight => (this.filters.aircraftType === "" || this.filters.aircraftType === null)
+      || this.filters.aircraftType === flight.aircraftType)
+      .filter(flight => (this.filters.airportCode === "" || this.filters.airportCode === null)
+        || flight.airportCode.includes(this.filters.airportCode))
   }
 
   showAllFlights() {
