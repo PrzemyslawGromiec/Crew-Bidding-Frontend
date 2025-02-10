@@ -1,5 +1,3 @@
-import {workPeriods} from "./Main";
-import {selectedPeriodId, updateFlights} from "./load-sidebar";
 import {Controller} from "./Controller";
 import {Filters} from "./Filters";
 
@@ -26,20 +24,6 @@ export class FilterBar {
     this.airportCodeInput.addEventListener('input', () => {
       Controller.instance.handleFilterChange(this.getFilters());
     });
-  }
-
-  delayHandleFilterChange() {
-    debounce(this.handleFilterChange, 300)
-  }
-
-  handleFilterChange() {
-    const period = workPeriods.find(period => period.id === selectedPeriodId);
-    if (!period) {
-      document.querySelector('.extra-column').innerHTML = "Please select dates in the calendar.";
-      displayFlights([]);
-      return;
-    }
-
   }
 }
 
