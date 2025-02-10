@@ -21,14 +21,12 @@ export class FlightSidebar {
     } else {
       this.filters.update(filters);
     }
-    console.log(this.filters)
     const flights = this.filterFlights();
     this.showFlights(flights);
   }
 
   filterFlights() {
     let flights = [...this._allFlightsData]
-
     return flights.filter(flight => {
       const flightReportTime = new Date(flight.reportTime);
       const flightClearTime = new Date(flight.clearTime);
