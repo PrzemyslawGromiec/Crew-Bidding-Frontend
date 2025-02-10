@@ -1,6 +1,8 @@
 import {Calendar} from "./Calendar";
 import {getFlights} from './api.js';
 import {FlightSidebar} from "./FlightSidebar";
+import {FilterBar} from "./FilterBar";
+import {Filters} from "./Filters";
 
 export class Controller {
 
@@ -11,9 +13,12 @@ export class Controller {
       throw new Error("Instance already created")
     }
     this.flightSidebar = new FlightSidebar();
+    this.filterBar = null;
     getFlights().then(data => {
       this.flightSidebar.allFlightsData = data;
       this.flightSidebar.showAllFlights();
+      this.filterBar = new FilterBar();
+      this.handleFilterChange(this.filterBar.getFilters());
     });
   }
 
@@ -58,16 +63,18 @@ export class Controller {
     const element = flightBar.element;
     element.addEventListener('mouseenter', () => {
       flightBar.showTooltip();
-      this.calendar.setHighlighted(flightBar.getCoveredDays(),true);
+      // flightBar.highlightHoveredFlight();
+      this.calendar.setHighlighted(flightBar.getCoveredDays(), true);
     });
 
     element.addEventListener('mouseleave', () => {
       flightBar.hideTooltip();
-      this.calendar.setHighlighted(flightBar.getCoveredDays(),false);
+      flightBar.removeHighlightFromHoveredFlight();
+      this.calendar.setHighlighted(flightBar.getCoveredDays(), false);
     });
 
-    element.addEventListener('click',()=>{
-      this.calendar.createWorkDuty(flightBar.getCoveredDays(),flightBar.flightData);
+    element.addEventListener('click', () => {
+      this.calendar.createWorkDuty(flightBar.getCoveredDays(), flightBar.flightData);
     })
   }
 
@@ -79,6 +86,12 @@ export class Controller {
   }
 
   showFlights(dates) {
-    this.flightSidebar.showFlightsForPeriod(dates)
+    this.flightSidebar.applyFilters(new Filters(dates));
+    //this.flightSidebar.filterByDates(dates);
   }
+
+  handleFilterChange(filters) {
+    this.flightSidebar.applyFilters(filters);
+  }
+
 }

@@ -1,81 +1,8 @@
 import { workPeriods, flights } from './Main.js';
-export let selectedPeriodIndex = null;
 export let selectedPeriodId = null;
 
 let aircraftTypeSelect;
 let airportCode;
-
-export function setSelectedPeriodIndex(index) {
-  selectedPeriodIndex = index;
-}
-
-export function getSelectedPeriodIndex() {
-  return selectedPeriodIndex;
-}
-
-export function setSelectedPeriodId(id) {
-  selectedPeriodId = id;
-}
-
-export function getSelectedPeriodId() {
-  return selectedPeriodId;
-}
-
-export default function loadSidebar() {
-  fetch('html/sidebar.html')
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('sidebar').innerHTML = data;
-      initializeSidebarEventListeners();
-    })
-    .catch(error => console.error('Error loading sidebar:', error));
-}
-
-function debounce(func, delay) {
-  let timeoutId;
-  return function (...args) {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
-
-/*export const handleFilterChange = debounce(() => {
-  if (selectedPeriodIndex === null || !workPeriods[selectedPeriodIndex]) {
-    document.querySelector('.extra-column').innerHTML = "Please select dates in the calendar.";
-    displayFlights([]);
-    return;
-  }
-
-  const selectedPeriod = workPeriods[selectedPeriodIndex];
-  console.log('Updating flights for period:', selectedPeriod.start, selectedPeriod.end);
-
-  let selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
-  const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
-
-  updateFlights(selectedPeriod.start, selectedPeriod.end, {
-    aircraftType: selectedAircraftType,
-    airportCode: airportCodeValue
-  });
-}, 300);*/
-
-const handleFilterChange = debounce(() => {
-  const period = workPeriods.find(period => period.id === selectedPeriodId);
-  if (!period) {
-    document.querySelector('.extra-column').innerHTML = "Please select dates in the calendar.";
-    displayFlights([]);
-    return;
-  }
-  let selectedAircraftType = aircraftTypeSelect ? aircraftTypeSelect.value : '';
-  const airportCodeValue = airportCode ? airportCode.value.toUpperCase() : '';
-
-  updateFlights(period.start, period.end, {
-    aircraftType: selectedAircraftType,
-    airportCode: airportCodeValue
-  });
-}, 300);
-
 
 function initializeSidebarEventListeners() {
   aircraftTypeSelect = document.getElementById('aircraftType');

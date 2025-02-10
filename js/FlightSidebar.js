@@ -1,10 +1,10 @@
-import {flights} from "./Main";
+import {flights, startCalendar} from "./Main";
 import {FlightBarFlight} from "./FlightBarFlight";
 
-export class FlightSidebar{
+export class FlightSidebar {
   constructor() {
     this._allFlightsData = [];
-    this.flights = [];
+    this.filters = null;
   }
 
   set allFlightsData(value) {
@@ -15,21 +15,33 @@ export class FlightSidebar{
     return this._allFlightsData;
   }
 
-  showFlightsForPeriod(period) {
-    const filteredFlights = flights.filter(flight => {
-      const flightReportTime = new Date(flight.reportTime);
-      const flightClearTime = new Date(flight.clearTime);
-
-      return flightReportTime >= period.start && flightClearTime <= period.end;
-    });
-    this.showFlights(filteredFlights);
+  applyFilters(filters) {
+    if (this.filters == null) {
+      this.filters = filters;
+    } else {
+      this.filters.update(filters);
+    }
+    const flights = this.filterFlights();
+    this.showFlights(flights);
   }
 
-  showAllFlights(){
+  filterFlights() {
+    const flights = [...this._allFlightsData]
+    if (this.filters.dates == null) {
+      return flights;
+    }
+    return flights.filter(flight => {
+      const flightReportTime = new Date(flight.reportTime);
+      const flightClearTime = new Date(flight.clearTime);
+      return flightReportTime >= this.filters.dates.start && flightClearTime <= this.filters.dates.end;
+    });
+  }
+
+  showAllFlights() {
     this.showFlights(this._allFlightsData);
   }
 
-  showFlights(flightsData){
+  showFlights(flightsData) {
     const flightsContainer = document.querySelector('.extra-column');
     flightsContainer.innerHTML = "";
     if (flightsData.length === 0) {
@@ -38,7 +50,7 @@ export class FlightSidebar{
     }
     this.flights = []
     for (const flightData of flightsData) {
-      const flight =new FlightBarFlight(flightData)
+      const flight = new FlightBarFlight(flightData)
       this.flights.push(flight);
       flightsContainer.appendChild(flight.element)
     }

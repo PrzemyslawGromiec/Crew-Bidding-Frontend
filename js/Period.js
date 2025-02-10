@@ -1,4 +1,5 @@
 import {PeriodType} from "./PeriodType";
+import {Dates} from "./Dates";
 
 export class Period {
 
@@ -49,22 +50,13 @@ export class Period {
   }
 
   getAsDates(){
-
     if (!this.days || this.days.length === 0) {
       console.warn('Empty array.');
       return null;
     }
-
     if (this.days.length === 1) {
-      return {
-        "start": this._startHours(this.days[0].date),
-        "end": this._endHours(this.days[0].date)
-      };
+      return new Dates(this._startHours(this.days[0].date),this._endHours(this.days[0].date))
     }
-
-    return {
-      "start": this._startHours(this.days[0].date),
-      "end": this._endHours(this.days[this.days.length - 1].date)
-    };
+    return new Dates(this._startHours(this.days[0].date), this._endHours(this.days[this.days.length - 1].date))
   }
 }

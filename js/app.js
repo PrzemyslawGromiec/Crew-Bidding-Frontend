@@ -11,7 +11,6 @@ import { getFlights, sendPeriod } from './api.js';
 // import {FlightBar} from "./FlightBar";
 
 startCalendar();
-loadSidebar();
 initializeFlights();
 
 export { getFlights, sendPeriod};

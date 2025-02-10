@@ -89,8 +89,8 @@ export class Calendar {
       this.currentSelection.clear();
     } else if (this.currentSelection.type === PeriodType.WORK) {
       this.currentSelection.stop();
-      let asDates = this.currentSelection.getAsDates();
-      Controller.instance.showFlights(asDates);
+      //console.log(this.currentSelection.getAsDates());
+      Controller.instance.showFlights(this.currentSelection.getAsDates());
     }
     return true;
   }

@@ -16,9 +16,11 @@ export class FlightBarFlight {
 
     element.innerHTML = `
     <div class="flight-card-content">
+
       <h3 class="flight-number">${this.flightData.flightNumber}</h3>
       <p class="airport-code"> ${this.flightData.airportCode}</p>
     </div>
+
     <div class="flight-card-tooltip">
       <p><strong>AIRCRAFT:</strong> ${this.flightData.aircraftType}</p>
       <p><strong>REPORT:</strong><br> ${this.formatDateTime(this.flightData.reportTime)}</p>
@@ -72,5 +74,13 @@ export class FlightBarFlight {
     const tooltip = this.element.querySelector('.flight-card-tooltip');
     tooltip.classList.add('tooltip-hidden');
     tooltip.classList.remove('tooltip-visible');
+  }
+
+  highlightHoveredFlight() {
+    this.element.classList.add('shine-container');
+  }
+
+  removeHighlightFromHoveredFlight() {
+    this.element.classList.remove('shine-container');
   }
 }
