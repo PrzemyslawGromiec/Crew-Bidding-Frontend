@@ -37,9 +37,9 @@
         <label for="aircraftType">Aircraft Type:</label>
         <select id="aircraftType" name="aircraftType">
           <option value="">ALL TYPES</option>
-<!--          <option value="A319">A319</option>-->
+          <!--          <option value="A319">A319</option>-->
           <option value="A320">A320</option>
-<!--          <option value="A321">A321</option>-->
+          <!--          <option value="A321">A321</option>-->
           <option value="B777">B777</option>
           <option value="B787">B787</option>
           <option value="A380">A380</option>
@@ -61,32 +61,28 @@
         <input type="text" placeholder="Destination" id="airportCode" class="airport-code-input">
       </div>
 
-      <div class="double-slider-box">
-        <h3 class="range-title">Duration of duty</h3>
-        <div class="range-slider">
-          <span class="slider-track"></span>
-          <input type="range" name="min_val" class="min-val" min="1000" max="12000" value="2000">
-          <input type="range" name="max_val" class="max-val" min="1000" max="12000" value="2000" >
-          <div class="tooltip min-tooltip"></div>
-          <div class="tooltip max-tooltip"></div>
+      <div class="dual-slider-container">
+        <div class="dual-slider-header">
+          <h2>DUTY LENGTH</h2>
         </div>
-        <div class="input-box">
-          <div class="min-box">
-            <div class="input-wrap">
-              <span class="input-addon">$</span>
-              <input type="text" name="min_input" class="input-field min-input">
-            </div>
+        <div class="slider-bar" id="slider-bar">
+          <div class="slider-range" id="slider-range"></div>
+          <div class="slider-handle" id="handle-min"></div>
+          <div class="slider-handle" id="handle-max"></div>
+        </div>
+        <div class="value-inputs">
+          <div class="value-input">
+            <label for="input-min">Min Value</label>
+            <input type="number" id="input-min" value="25">
           </div>
-
-          <div class="max-box">
-            <div class="input-wrap">
-              <span class="input-addon">$</span>
-              <input type="text" name="max_input" class="input-field max-input">
-            </div>
+          <div class="value-input">
+            <label for="input-max">Max Value</label>
+            <input type="number" id="input-max" value="75">
           </div>
-
         </div>
       </div>
+
+
     </div>
   </div>
 

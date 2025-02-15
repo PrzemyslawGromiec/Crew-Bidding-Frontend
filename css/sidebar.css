@@ -217,3 +217,68 @@ input[type="range"]::-moz-range-thumb {
 .input-field:focus {
   outline: none;
 }
+
+.dual-slider-container {
+  width: 400px;
+  margin: 50px auto;
+  font-family: Arial, sans-serif;
+}
+.dual-slider-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+/* Slider bar styling */
+.slider-bar {
+  position: relative;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+/* Range highlight between handles */
+.slider-range {
+  position: absolute;
+  height: 100%;
+  background: #007bff;
+  border-radius: 3px;
+}
+/* Slider handles (dots) */
+.slider-handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border: 2px solid #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+.slider-handle:active {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+/* Input containers for min and max values */
+.value-inputs {
+  display: flex;
+  justify-content: space-between;
+}
+.value-input {
+  width: 45%;
+}
+.value-input label {
+  display: block;
+  text-align: center;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #555;
+}
+.value-input input {
+  width: 100%;
+  padding: 5px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: center;
+}

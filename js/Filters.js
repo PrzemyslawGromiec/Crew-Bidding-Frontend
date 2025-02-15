@@ -5,6 +5,7 @@ export class Filters{
     this.airportCode = airportCode;
   }
 
+  //todo: duration of duty filter
   update(filters){
     if(filters.dates != null){
       this.dates = filters.dates;
