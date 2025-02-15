@@ -1,11 +1,13 @@
 import {Controller} from "./Controller";
 import {Filters} from "./Filters";
+import {SliderFilter} from "./SliderFilter";
 
 export class FilterBar {
 
   constructor() {
     this.aircraftTypeSelect = document.getElementById('aircraftType');
     this.airportCodeInput = document.getElementById('airportCode');
+    this.slider = new SliderFilter();
     this.initializeSidebarEventListeners();
   }
 
