@@ -12,8 +12,12 @@ export class Controller {
     if (Controller.instance) {
       throw new Error("Instance already created")
     }
+    //RIGHT SIDE FLIGHT BAR CREATED
     this.flightSidebar = new FlightSidebar();
+    //BOTTOM FILTER BAR
+    //todo: why not to initialize with new FilterBar(); ?
     this.filterBar = null;
+    // this.filterBar = new FilterBar();
     getFlights().then(data => {
       this.flightSidebar.allFlightsData = data;
       this.flightSidebar.showAllFlights();

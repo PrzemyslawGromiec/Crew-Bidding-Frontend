@@ -1,5 +1,3 @@
-// import {FlightBar} from "./FlightBar";
-
 const DOMAIN = "http://localhost:8080/";
 export let originalFlights = [];
 let flightBar = null
@@ -36,10 +34,7 @@ export async function getFlights(criteria) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    console.log('Received flights:', data);
-
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error fetching flights:', error);
     return [];

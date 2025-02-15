@@ -23,7 +23,6 @@ export class Calendar {
   init() {
     this.setupHeader();
     this.setupDays();
-    console.log("starting app");
   }
 
   setupHeader() {
@@ -89,7 +88,6 @@ export class Calendar {
       this.currentSelection.clear();
     } else if (this.currentSelection.type === PeriodType.WORK) {
       this.currentSelection.stop();
-      //console.log(this.currentSelection.getAsDates());
       Controller.instance.showFlights(this.currentSelection.getAsDates());
     }
     return true;

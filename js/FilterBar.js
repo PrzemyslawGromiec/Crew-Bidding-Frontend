@@ -18,7 +18,6 @@ export class FilterBar {
     return new Filters(null, selectedAircraftType, airportCodeValue);
   }
 
-
   initializeSidebarEventListeners() {
     this.aircraftTypeSelect.addEventListener('change', () => {
       Controller.instance.handleFilterChange(this.getFilters());

@@ -1,4 +1,3 @@
-import {flights, startCalendar} from "./Main";
 import {FlightBarFlight} from "./FlightBarFlight";
 
 export class FlightSidebar {
@@ -30,7 +29,7 @@ export class FlightSidebar {
     return flights.filter(flight => {
       const flightReportTime = new Date(flight.reportTime);
       const flightClearTime = new Date(flight.clearTime);
-      return this.filters.date == null ||
+      return this.filters.dates == null ||
         (flightReportTime >= this.filters.dates.start &&
           flightClearTime <= this.filters.dates.end);
     }).filter(flight => (this.filters.aircraftType === "" || this.filters.aircraftType === null)
