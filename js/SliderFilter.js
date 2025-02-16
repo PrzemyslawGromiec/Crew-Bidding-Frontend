@@ -32,14 +32,6 @@ export class SliderFilter{
       this.startDrag(this.handleMax, e);
     });
 
-    // Similarly for touch events:
-    this.handleMin.addEventListener('touchstart', (e) => {
-      this.startDrag(this.handleMin, e);
-    });
-    this.handleMax.addEventListener('touchstart', (e) => {
-      this.startDrag(this.handleMax, e);
-    });
-
     // Assuming this.inputMin and this.inputMax are already defined:
     this.inputMin.addEventListener('change', () => {
       this.onInputMinChange(this.inputMin);
@@ -53,13 +45,9 @@ export class SliderFilter{
   }
 
   startDrag(handle, e) {
-    // Now you already know which handle is being dragged.
     this.activeHandle = handle;
-    // Capture initial pointer position if needed:
-    this.startX = e.clientX || (e.touches && e.touches[0].clientX);
-    // Capture the initial position of the handle (assuming a pixel-based left property)
+    this.startX = e.clientX;
     this.initialHandlePosition = parseFloat(this.activeHandle.style.left) || 0;
-    // Provide visual feedback
     this.activeHandle.classList.add('dragging');
     e.preventDefault();
   }
@@ -68,7 +56,7 @@ export class SliderFilter{
     if (!this.activeHandle) return;
 
     // Get the current pointer X coordinate (support both mouse and touch)
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientX = e.clientX;
     if (!clientX) return;
 
     // Calculate how much the pointer has moved from the initial position
@@ -106,6 +94,7 @@ export class SliderFilter{
 
   onInputMinChange(inputEl) {
     let val = parseFloat(inputEl.value);
+    console.log(inputEl.value)
     if (isNaN(val)) {
       val = this.minLimit;
     }
@@ -122,9 +111,10 @@ export class SliderFilter{
     this.updateSliderPositions();
   }
 
-
   updateSliderPositions() {
+    //get the current width of the slider bar in pixels
     const sliderWidth = this.sliderBar.offsetWidth;
+    //calculate the pixel position for the minimum handle
     const posMin = ((this.currentMin - this.minLimit) / (this.maxLimit - this.minLimit)) * sliderWidth;
     const posMax = ((this.currentMax - this.minLimit) / (this.maxLimit - this.minLimit)) * sliderWidth;
 
@@ -133,7 +123,7 @@ export class SliderFilter{
     this.sliderRange.style.left = posMin + 'px';
     this.sliderRange.style.width = (posMax - posMin) + 'px';
 
-    // Update input values (rounded)
+    //update input values (rounded)
     this.inputMin.value = Math.round(this.currentMin);
     this.inputMax.value = Math.round(this.currentMax);
   }
