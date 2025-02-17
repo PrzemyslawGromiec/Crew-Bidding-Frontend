@@ -38,19 +38,12 @@ export class FlightSidebar {
       .filter(flight => (this.filters.airportCode === "" || this.filters.airportCode === null)
         || flight.airportCode.includes(this.filters.airportCode))
       .filter(flight => {
-
         //DURATION IN DAYS
         const reportDate = new Date(flight.reportTime);
         const clearDate = new Date(flight.clearTime);
-
-        // Zero out the time components to compare only calendar dates.
         reportDate.setHours(0, 0, 0, 0);
         clearDate.setHours(0, 0, 0, 0);
-
-        // Calculate the difference in days. Adding 1 makes it inclusive.
         const daySpan = (clearDate - reportDate) / (1000 * 60 * 60 * 24) + 1;
-
-        // Filter: Only include flights that span between minDuration and maxDuration days.
         return daySpan >= this.filters.minDuration && daySpan <= this.filters.maxDuration;
       });
   }
