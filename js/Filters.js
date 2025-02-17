@@ -1,11 +1,13 @@
 export class Filters{
-  constructor(dates = null, aircraftType = null, airportCode = null) {
+  constructor(dates = null, aircraftType = null, airportCode = null,
+              minDuration = null, maxDuration = null) {
     this.dates = dates;
     this.aircraftType = aircraftType;
     this.airportCode = airportCode;
+    this.minDuration = minDuration;
+    this.maxDuration = maxDuration;
   }
 
-  //todo: duration of duty filter
   update(filters){
     if(filters.dates != null){
       this.dates = filters.dates;
@@ -16,6 +18,11 @@ export class Filters{
     if(filters.aircraftType !== null){
       this.aircraftType = filters.aircraftType;
     }
+    if(filters.minDuration !==null) {
+      this.minDuration = filters.minDuration;
+    }
+    if(filters.maxDuration !== null) {
+      this.maxDuration = filters.maxDuration;
+    }
   }
 }
-

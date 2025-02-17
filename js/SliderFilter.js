@@ -8,16 +8,15 @@ export class SliderFilter{
     this.inputMin = document.getElementById('input-min');
     this.inputMax = document.getElementById('input-max');
     this.minLimit = 0;
-    this.maxLimit = 100;
-    this.currentMin = parseFloat(this.inputMin.value) || 25;
-    this.currentMax = parseFloat(this.inputMax.value) || 75;
+    this.maxLimit = 10;
+    this.currentMin = parseFloat(this.inputMin.value) || 0;
+    this.currentMax = parseFloat(this.inputMax.value) || 10;
     this.activeHandle = null;
     this.startDrag = this.startDrag.bind(this);
     this.duringDrag = this.duringDrag.bind(this);
     this.endDrag = this.endDrag.bind(this);
     this.onInputMinChange = this.onInputMinChange.bind(this);
     this.onInputMaxChange = this.onInputMaxChange.bind(this);
-    this.updateSliderPositions = this.updateSliderPositions.bind(this);
     this.initListeners();
     this.updateSliderPositions();
   }
@@ -54,7 +53,6 @@ export class SliderFilter{
 
   duringDrag(e) {
     if (!this.activeHandle) return;
-
     // Get the current pointer X coordinate (support both mouse and touch)
     const clientX = e.clientX;
     if (!clientX) return;
@@ -85,7 +83,7 @@ export class SliderFilter{
     this.updateSliderPositions();
   }
 
-  endDrag(e) {
+  endDrag() {
     if (this.activeHandle) {
       this.activeHandle.classList.remove('dragging');
       this.activeHandle = null;
@@ -126,6 +124,22 @@ export class SliderFilter{
     //update input values (rounded)
     this.inputMin.value = Math.round(this.currentMin);
     this.inputMax.value = Math.round(this.currentMax);
+
+    const event = new CustomEvent('sliderValueChanged', {
+      detail: {
+        min: this.getCurrentMinVal(),
+        max: this.getCurrentMaxVal()
+      }
+    });
+    document.dispatchEvent(event);
+  }
+
+  getCurrentMinVal() {
+    return this.inputMin.value;
+  }
+
+  getCurrentMaxVal() {
+    return this.inputMax.value;
   }
 }
 
