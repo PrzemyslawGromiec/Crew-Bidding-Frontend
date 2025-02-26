@@ -1,4 +1,5 @@
 import {FlightBarFlight} from "./FlightBarFlight";
+import {Common} from "./Common";
 
 export class FlightSidebar {
   constructor() {
@@ -45,6 +46,16 @@ export class FlightSidebar {
         clearDate.setHours(0, 0, 0, 0);
         const daySpan = (clearDate - reportDate) / (1000 * 60 * 60 * 24) + 1;
         return daySpan >= this.filters.minDuration && daySpan <= this.filters.maxDuration;
+      })
+      .filter(flight => {
+        const flightReportTime = new Date(flight.reportTime);
+        return (this.filters.reportTime === null
+        || Common.isLaterThan(flightReportTime,this.filters.reportTime))
+      })
+      .filter(flight => {
+        const flightClearTime = new Date(flight.clearTime);
+        return (this.filters.clearTime === null
+          || Common.isBefore(flightClearTime,this.filters.clearTime))
       });
   }
 
@@ -53,6 +64,7 @@ export class FlightSidebar {
   }
 
   showFlights(flightsData) {
+    flightsData.sort((a, b) => new Date(a.clearTime) - new Date(b.clearTime));
     const flightsContainer = document.querySelector('.extra-column');
     flightsContainer.innerHTML = "";
     if (flightsData.length === 0) {

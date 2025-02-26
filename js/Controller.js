@@ -15,13 +15,11 @@ export class Controller {
     //RIGHT SIDE FLIGHT BAR CREATED
     this.flightSidebar = new FlightSidebar();
     //BOTTOM FILTER BAR
-    //todo: why not to initialize with new FilterBar(); ?
-    this.filterBar = null;
-    // this.filterBar = new FilterBar();
+    this.filterBar = new FilterBar();
     getFlights().then(data => {
       this.flightSidebar.allFlightsData = data;
       this.flightSidebar.showAllFlights();
-      this.filterBar = new FilterBar();
+      console.log(this.flightSidebar.allFlightsData)
       this.handleFilterChange(this.filterBar.getFilters());
     });
   }
@@ -97,5 +95,4 @@ export class Controller {
   handleFilterChange(filters) {
     this.flightSidebar.applyFilters(filters);
   }
-
 }

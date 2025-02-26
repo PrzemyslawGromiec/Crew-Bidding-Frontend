@@ -7,10 +7,11 @@ export class SliderFilter{
     this.handleMax = document.getElementById('handle-max');
     this.inputMin = document.getElementById('input-min');
     this.inputMax = document.getElementById('input-max');
-    this.minLimit = 0;
-    this.maxLimit = 10;
-    this.currentMin = parseFloat(this.inputMin.value) || 0;
-    this.currentMax = parseFloat(this.inputMax.value) || 10;
+
+    this.minLimit = 1
+    this.maxLimit = 9;
+    this.currentMin = parseFloat(this.inputMin.value) || 1;
+    this.currentMax = parseFloat(this.inputMax.value) || 9;
     this.activeHandle = null;
     this.startDrag = this.startDrag.bind(this);
     this.duringDrag = this.duringDrag.bind(this);
@@ -38,7 +39,6 @@ export class SliderFilter{
     this.inputMax.addEventListener('change', () => {
       this.onInputMaxChange(this.inputMax);
     });
-
     window.addEventListener('mousemove', this.duringDrag);
     window.addEventListener('mouseup', this.endDrag);
   }

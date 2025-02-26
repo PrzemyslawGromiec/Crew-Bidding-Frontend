@@ -7,6 +7,8 @@ export class FilterBar {
   constructor() {
     this.aircraftTypeSelect = document.getElementById('aircraftType');
     this.airportCodeInput = document.getElementById('airportCode');
+    this.reportTimeInput = document.getElementById('reportTime');
+    this.clearTimeInput = document.getElementById('clearTime');
     this.sliderUserValues = new SliderFilterUserValue();
     this.initializeSidebarEventListeners();
   }
@@ -17,10 +19,21 @@ export class FilterBar {
     const airportCodeValue = this.airportCodeInput ? this.airportCodeInput.value.toUpperCase() : '';
     const sliderUserValMin = this.sliderUserValues.getUserCurrentMinValue();
     const sliderUserValMax = this.sliderUserValues.getUserCurrentMaxValue();
-    return new Filters(null, selectedAircraftType, airportCodeValue,sliderUserValMin, sliderUserValMax);
+    const reportTimeDate = this.getDateFromFilter(this.reportTimeInput);
+    const clearTimeDate = this.getDateFromFilter(this.clearTimeInput);
+    return new Filters(null, selectedAircraftType, airportCodeValue,sliderUserValMin, sliderUserValMax,
+      reportTimeDate,clearTimeDate);
+  }
+
+  getDateFromFilter(inputElement) {
+    const [hours, minutes] = inputElement.value.split(":").map(Number);
+    const date = new Date();
+    date.setHours(hours,minutes);
+    return date;
   }
 
   initializeSidebarEventListeners() {
+    console.log("init listeners")
     this.aircraftTypeSelect.addEventListener('change', () => {
       Controller.instance.handleFilterChange(this.getFilters());
     });
@@ -28,6 +41,12 @@ export class FilterBar {
       Controller.instance.handleFilterChange(this.getFilters());
     });
     document.addEventListener('sliderValueChanged', () => {
+      Controller.instance.handleFilterChange(this.getFilters());
+    });
+    this.reportTimeInput.addEventListener('change', () => {
+      Controller.instance.handleFilterChange(this.getFilters());
+    });
+    this.clearTimeInput.addEventListener('change', () => {
       Controller.instance.handleFilterChange(this.getFilters());
     });
   }
