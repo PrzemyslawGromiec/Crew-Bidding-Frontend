@@ -14,24 +14,35 @@
       <div class="header"></div>
       <div class="days-container"></div>
 
-      <button id="open-modal-button">Open Modal</button>
 
+
+      <button id="open-modal-button">Open Modal</button>
       <div id="backdrop" class="backdrop"></div>
+
+
       <div id="modal" class="modal">
-        <h3>Edit Period</h3>
-        <label for="start-date">Start Date:</label>
-        <input type="date" id="start-date"/>
-        <label for="end-date">End Date:</label>
-        <input type="date" id="end-date"/>
-        <label for="comment">Comment:</label>
-        <textarea id="comment" placeholder="Add your comment here..."></textarea>
+        <h3>Create report</h3>
+        <table id="myTable" border="1">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>DESTINATION</th>
+          </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
         <div class="modal-buttons">
           <button class="save-button">Save</button>
           <button class="cancel-button">Cancel</button>
         </div>
-      </div>
 
+      </div>
     </div>
+
+
+
     <div id="sidebar">
       <div class="grid-item aircraft-type">
         <label for="aircraftType">Aircraft Type:</label>
@@ -94,27 +105,7 @@
 
 
 </div>
-<script>
-  const openModalButton = document.getElementById('open-modal-button');
-  const modal = document.getElementById('modal');
-  const backdrop = document.getElementById('backdrop');
 
-  function openModal() {
-    modal.style.display = 'block';
-    backdrop.style.display = 'block';
-  }
-
-  function closeModal() {
-    modal.style.display = 'none';
-    backdrop.style.display = 'none';
-  }
-
-  openModalButton.addEventListener('click', openModal);
-
-  backdrop.addEventListener('click', closeModal);
-  document.querySelector('.cancel-button').addEventListener('click', closeModal);
-  document.querySelector('.save-button').addEventListener('click', closeModal);
-</script>
 
 </body>
 </html>

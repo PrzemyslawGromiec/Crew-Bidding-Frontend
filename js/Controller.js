@@ -18,8 +18,6 @@ export class Controller {
     this.filterBar = new FilterBar();
     getFlights().then(data => {
       this.flightSidebar.allFlightsData = data;
-      this.flightSidebar.showAllFlights();
-      console.log(this.flightSidebar.allFlightsData)
       this.handleFilterChange(this.filterBar.getFilters());
     });
   }
@@ -28,6 +26,7 @@ export class Controller {
     this.calendar = new Calendar();
     this.calendar.init();
     this.attachDayListeners();
+    this.addModalListener();
   }
 
   attachDayListeners() {
@@ -89,10 +88,31 @@ export class Controller {
 
   showFlights(dates) {
     this.flightSidebar.applyFilters(new Filters(dates));
-    //this.flightSidebar.filterByDates(dates);
   }
 
   handleFilterChange(filters) {
     this.flightSidebar.applyFilters(filters);
+  }
+
+  addModalListener() {
+    const openModalButton = document.getElementById('open-modal-button');
+    const modal = document.getElementById('modal');
+    const backdrop = document.getElementById('backdrop');
+
+    function openModal() {
+      modal.style.display = 'block';
+      backdrop.style.display = 'block';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      backdrop.style.display = 'none';
+    }
+
+    openModalButton.addEventListener('click', openModal);
+
+    backdrop.addEventListener('click', closeModal);
+    document.querySelector('.cancel-button').addEventListener('click', closeModal);
+    document.querySelector('.save-button').addEventListener('click', closeModal);
   }
 }

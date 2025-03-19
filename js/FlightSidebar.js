@@ -18,7 +18,6 @@ export class FlightSidebar {
   applyFilters(filters) {
     if (this.filters == null) {
       this.filters = filters;
-      console.log(this.filters)
     } else {
       this.filters.update(filters);
     }

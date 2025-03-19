@@ -26,6 +26,9 @@ export class FilterBar {
   }
 
   getDateFromFilter(inputElement) {
+    if(inputElement.value === "") {
+      return null;
+    }
     const [hours, minutes] = inputElement.value.split(":").map(Number);
     const date = new Date();
     date.setHours(hours,minutes);
@@ -33,7 +36,6 @@ export class FilterBar {
   }
 
   initializeSidebarEventListeners() {
-    console.log("init listeners")
     this.aircraftTypeSelect.addEventListener('change', () => {
       Controller.instance.handleFilterChange(this.getFilters());
     });

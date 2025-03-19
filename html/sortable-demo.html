@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Sortable Table</title>
+</head>
+<body>
+
+
+<!-- Pobierz SortableJS z CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  // Inicjalizacja
+  const tableBody = document.querySelector('#myTable tbody');
+  new Sortable(tableBody, {
+    animation: 150,  // fajna animacja przy przenoszeniu
+    // Możesz dodać inne opcje, np. 'handle', jeśli chcesz przenosić za konkretny uchwyt
+  });
+</script>
+</body>
+</html>
